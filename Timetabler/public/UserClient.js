@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let isDragging = false;
 
+
 window.addEventListener('mousedown', function(e) {
   if (e.target.classList.contains('timetable-region') && e.target.getAttribute('current-drag') !== 'true') {
     isDragging = true;
@@ -103,7 +104,6 @@ window.addEventListener('mousedown', function(e) {
     return toggleTblCellClass(e.target);
   }
 });
-
 window.addEventListener('mousemove', function(e) {
   if (isDragging && e.target.classList.contains('timetable-region') && e.target.getAttribute('current-drag') !== 'true') {
     e.target.setAttribute('current-drag', 'true');
@@ -116,5 +116,12 @@ window.addEventListener('mouseup', function(e) {
     isDragging = false;
     document.querySelectorAll('.timetable-region[current-drag]')
       .forEach(e => e.removeAttribute('current-drag'));
+  }
+});
+window.addEventListener('click', function(e) {
+  if (e.target.classList.contains('timetable-region') && e.target.getAttribute('current-drag') !== 'true') {
+    e.target.setAttribute('current-drag', 'true');
+    e.preventDefault();
+    return toggleTblCellClass(e.target);
   }
 });
