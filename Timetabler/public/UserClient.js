@@ -127,7 +127,7 @@ function saveAvailability(free, datetime, user) {
 function queryAvailability(datetime, calendar, user, cell) {
     xhttpRequest('/getUserAvailability', function(xhttp) {
         if (xhttp.responseText !== "empty") {
-            cell.className = xhttp.responseText === "1" ? "freetime" : "busy"
+            cell.classList.add(xhttp.responseText === "1" ? "freetime" : "busy")
         }
     }, "user=" + user.id + "&datetime=" + datetime)
 }
