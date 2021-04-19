@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 const data = "{\n" +
 		"  \"availability\": [{\n" +
 		"    \"id\": \"0\",\n" +
@@ -61,12 +61,12 @@ function generateTimeTableBody(table, days, timeRange) {
 				row.appendChild(th)
 			} else {
 				const cell = row.insertCell()
-        cell.classList.add('timetable-region');
-        cell.setAttribute('tabindex', '0');
+        cell.classList.add('timetable-region')
+        cell.setAttribute('tabindex', '0')
 
-        const initialClass = queryAvailability(increment, day, user);
+        const initialClass = queryAvailability(increment, day, user)
         if (initialClass.length > 0)
-          cell.classList.add(initialClass);
+          cell.classList.add(initialClass)
 			}
 		}
 	}
@@ -80,12 +80,12 @@ function queryAvailability(datetime, calendar, user) {
 
 function toggleTblCellClass(cell) {
   if (cell.classList.contains('freetime')) {
-    cell.classList.remove('freetime');
-    cell.classList.add('busy');
+    cell.classList.remove('freetime')
+    cell.classList.add('busy')
   } else if (cell.classList.contains('busy')) {
-    cell.classList.remove('busy');
+    cell.classList.remove('busy')
   } else {
-    cell.classList.add('freetime');
+    cell.classList.add('freetime')
   }
 }
 
@@ -93,35 +93,35 @@ document.addEventListener('DOMContentLoaded', () => {
 	generateTimeTable()
 })
 
-let isDragging = false;
+let isDragging = false
 
 
 window.addEventListener('mousedown', function(e) {
   if (e.target.classList.contains('timetable-region') && e.target.getAttribute('current-drag') !== 'true') {
-    isDragging = true;
-    e.target.setAttribute('current-drag', 'true');
-    e.preventDefault();
-    return toggleTblCellClass(e.target);
+    isDragging = true
+    e.target.setAttribute('current-drag', 'true')
+    e.preventDefault()
+    return toggleTblCellClass(e.target)
   }
-});
+})
 window.addEventListener('mousemove', function(e) {
   if (isDragging && e.target.classList.contains('timetable-region') && e.target.getAttribute('current-drag') !== 'true') {
-    e.target.setAttribute('current-drag', 'true');
-    e.preventDefault();
-    return toggleTblCellClass(e.target);
+    e.target.setAttribute('current-drag', 'true')
+    e.preventDefault()
+    return toggleTblCellClass(e.target)
   }
-});
+})
 window.addEventListener('mouseup', function(e) {
   if (isDragging) {
-    isDragging = false;
+    isDragging = false
     document.querySelectorAll('.timetable-region[current-drag]')
-      .forEach(e => e.removeAttribute('current-drag'));
+      .forEach(e => e.removeAttribute('current-drag'))
   }
-});
+})
 window.addEventListener('click', function(e) {
   if (e.target.classList.contains('timetable-region') && e.target.getAttribute('current-drag') !== 'true') {
-    e.target.setAttribute('current-drag', 'true');
-    e.preventDefault();
-    return toggleTblCellClass(e.target);
+    e.target.setAttribute('current-drag', 'true')
+    e.preventDefault()
+    return toggleTblCellClass(e.target)
   }
-});
+})
