@@ -6,7 +6,7 @@ User follows link and sees a timetable. 9-5? Perhaps longer range. Monday-Sunday
 corresponding to their ability to attend to a session at that time in the average week. Once done, submits and si sent to server.
 
 ## Client - Admin
-Admin is able to view several different combinations of the data.
+Admin is able to view several combinations of the data.
 - Average: Averages all data to produce a heat map of when is most free
 - Reverse View: By inputting a time and day, the admin will be able to view all the people would be able to attend.
 - Grouped Average: Shows a heat map only for a select group of users, useful for finding a corresponding time that allows for everyone to attend a session in a given week, 
