@@ -1,36 +1,36 @@
 'use strict'
 const data = "{\n" +
-		"  \"availability\": [{\n" +
-		"    \"id\": \"0\",\n" +
-		"    \"user\": \"bob\",\n" +
-		"    \"calendar\": \"monday\",\n" +
-		"    \"datetime\": \"9\",\n" +
-		"    \"free\": \"1\"\n" +
-		"  }, {\n" +
-		"    \"id\": \"1\",\n" +
-		"    \"user\": \"bob\",\n" +
-		"    \"calendar\": \"monday\",\n" +
-		"    \"datetime\": \"10\",\n" +
-		"    \"free\": \"0\"\n" +
-		"  }, {\n" +
-		"    \"id\": \"2\",\n" +
-		"    \"user\": \"gerald\",\n" +
-		"    \"calendar\": \"monday\",\n" +
-		"    \"datetime\": \"9\",\n" +
-		"    \"free\": \"1\"\n" +
-		"  }, {\n" +
-		"    \"id\": \"3\",\n" +
-		"    \"user\": \"gerald\",\n" +
-		"    \"calendar\": \"monday\",\n" +
-		"    \"datetime\": \"11\",\n" +
-		"    \"free\": \"0\"\n" +
-		"  }]\n" +
-		"}"
+        "  \"availability\": [{\n" +
+        "    \"id\": \"0\",\n" +
+        "    \"user\": \"bob\",\n" +
+        "    \"calendar\": \"monday\",\n" +
+        "    \"datetime\": \"9\",\n" +
+        "    \"free\": \"1\"\n" +
+        "  }, {\n" +
+        "    \"id\": \"1\",\n" +
+        "    \"user\": \"bob\",\n" +
+        "    \"calendar\": \"monday\",\n" +
+        "    \"datetime\": \"10\",\n" +
+        "    \"free\": \"0\"\n" +
+        "  }, {\n" +
+        "    \"id\": \"2\",\n" +
+        "    \"user\": \"gerald\",\n" +
+        "    \"calendar\": \"monday\",\n" +
+        "    \"datetime\": \"9\",\n" +
+        "    \"free\": \"1\"\n" +
+        "  }, {\n" +
+        "    \"id\": \"3\",\n" +
+        "    \"user\": \"gerald\",\n" +
+        "    \"calendar\": \"monday\",\n" +
+        "    \"datetime\": \"11\",\n" +
+        "    \"free\": \"0\"\n" +
+        "  }]\n" +
+        "}"
 const user = {
     "id": "1",
     "username": "joe",
     "password": "password",
-		"calendar": "1"
+    "calendar": "1"
 }
 const calendar = 1;
 
@@ -56,84 +56,72 @@ function xhttpRequest(url, cFunction, sendStr, cFunctionParams) {
 }
 
 function generateTimeTable() {
-	const table     = document.getElementById("tblTimetable")
-	const days      = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-	const timeRange = [9, 10, 11, 12, 1, 2, 3, 4, 5]
+    const table     = document.getElementById("tblTimetable")
+    const days      = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    const timeRange = [9, 10, 11, 12, 1, 2, 3, 4, 5]
 
-	generateTimeTableHead(table, days)
-	generateTimeTableBody(table, days, timeRange)
+    generateTimeTableHead(table, days)
+    generateTimeTableBody(table, days, timeRange)
 
 }
 
 function generateTimeTableHead(table, days) {
-	let thead = table.createTHead()
-	let row = thead.insertRow()
-	for (let day of days) {
-		let th = document.createElement("th")
-		th.appendChild(document.createTextNode(day))
-		row.appendChild(th)
-	}
+    let thead = table.createTHead()
+    let row = thead.insertRow()
+    for (let day of days) {
+        let th = document.createElement("th")
+        th.appendChild(document.createTextNode(day))
+        row.appendChild(th)
+    }
 }
 
 function generateTimeTableBody(table, days, timeRange) {
-	let tbody = document.createElement("tbody")
+    let tbody = document.createElement("tbody")
 
-	for (let increment of timeRange) {
-		let row = tbody.insertRow()
+    for (let increment of timeRange) {
+        let row = tbody.insertRow()
 
-		for (let day of days) {
-			if (day === "") {
-				let th = document.createElement("th")
-				th.appendChild(document.createTextNode(increment))
-				row.appendChild(th)
-			} else {
-				const cell = row.insertCell()
-				cell.onclick = (ev => toggleTblCellClass(ev.target))
+        for (let day of days) {
+            if (day === "") {
+                let th = document.createElement("th")
+                th.appendChild(document.createTextNode(increment))
+                row.appendChild(th)
+            } else {
+                const cell = row.insertCell()
+                cell.onclick = (ev => toggleTblCellClass(ev.target))
         cell.classList.add('timetable-region')
-				cell.id = day + increment
+                cell.id = day + increment
         cell.setAttribute('tabindex', '0')
         queryAvailability(day.toLowerCase() + increment, calendar, user, cell)
-			}
-		}
-	}
+            }
+        }
+    }
 
-	table.appendChild(tbody)
+    table.appendChild(tbody)
 }
 
-async function saveAvailabilities() {
-	let frees  = document.querySelectorAll("td.freetime")
-	let busies = document.querySelectorAll("td.busy")
+function saveAvailabilities() {
+    let frees  = document.querySelectorAll("td.freetime")
+    let busies = document.querySelectorAll("td.busy")
 
-	for (let free of frees) {
-		await saveAvailability(1, free.id, user)
-	}
+    for (let free of frees) {
+        saveAvailability(1, free.id, user)
+    }
 
-	for (let busy of busies) {
-		await saveAvailability(0, busy.id, user)
-	}
+    for (let busy of busies) {
+        saveAvailability(0, busy.id, user)
+    }
 }
 
-async function saveAvailability(free, datetime, user) {
-  return await fetch('/saveUserAvailability', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      free,
-      datetime,
-      user: user.id,
-      calendar: '1',
-    }),
-  });
-	/*xhttpRequest('/saveUserAvailability', (xhttp) => {
-		if (xhttp.responseText === "success") {
-			alert("Save Successful")
-		} else {
-			alert("Save Failed")
-			console.error(err)
-		}
-	})*/
+function saveAvailability(free, datetime, user) {
+    xhttpRequest('/saveUserAvailability', (xhttp) => {
+        if (xhttp.responseText === "success") {
+            console.log("Save Successful")
+        } else {
+            console.log("Save Failed")
+            console.error(err)
+        }
+    }, "user=" + user.id + "&calendar=" + calendar + "&datetime=" + datetime.toLowerCase() + "&free=" + free)
 }
 
 function queryAvailability(datetime, calendar, user, cell) {
@@ -156,7 +144,7 @@ function toggleTblCellClass(cell) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	generateTimeTable()
+    generateTimeTable()
 })
 
 let isDragging = false
