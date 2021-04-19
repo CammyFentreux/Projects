@@ -39,6 +39,16 @@ router.get('/admin', (req, res, next) => res.render('AdminClient'));
 router.get('/login', (req, res, next) => res.render('login'));
 
 /* POST methods */
+router.post('/clearUserAvailability', (req, res, next) => {
+  if ([req.body.user, req.body.calendar].includes(undefined)) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute('DELETE FROM availability WHERE user=? AND calendar=?', [req.body.user, req.body.calendar], (err, results, fields) => {
+    if (err) console.error(err);
+    res.send(err ? "failure" : "success");
+  });
+});
+
 router.post('/saveUserAvailability', (req, res, next) => {
   if ([req.body.user, req.body.calendar, req.body.datetime, req.body.free].includes(undefined)) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
@@ -50,17 +60,17 @@ router.post('/saveUserAvailability', (req, res, next) => {
 });
 
 router.post('/getUserAvailability', (req, res, next) => {
-    connection.execute("SELECT free FROM availability WHERE user=? AND datetime=?;", [req.body.user, req.body.datetime], function(err, results, fields) {
-        if (err == null) {
-            if (results[0]) {
-                res.send(results[0].free + "");
-            } else {
-                res.send("empty");
-            }
-        } else {
-            res.send("Error");
-        }
-    });
+  connection.execute("SELECT free FROM availability WHERE user=? AND datetime=?;", [req.body.user, req.body.datetime], function(err, results, fields) {
+    if (err == null) {
+      if (results[0]) {
+        res.send(results[0].free + "");
+      } else {
+        res.send("empty");
+      }
+    } else {
+      res.send("Error");
+    }
+  });
 });
 
 module.exports = router;

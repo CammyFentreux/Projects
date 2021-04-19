@@ -100,16 +100,23 @@ function generateTimeTableBody(table, days, timeRange) {
 }
 
 function saveAvailabilities() {
-    let frees  = document.querySelectorAll("td.freetime")
-    let busies = document.querySelectorAll("td.busy")
+    xhttpRequest('/clearUserAvailability', (xhttp) => {
+        if (xhttp.responseText === "success") {
+            let frees  = document.querySelectorAll("td.freetime")
+            let busies = document.querySelectorAll("td.busy")
 
-    for (let free of frees) {
-        saveAvailability(1, free.id, user)
-    }
+            for (let cell of frees) {
+                saveAvailability(1, cell.id, user)
+            }
 
-    for (let busy of busies) {
-        saveAvailability(0, busy.id, user)
-    }
+            for (let cell of busies) {
+                saveAvailability(0, cell.id, user)
+            }
+        } else {
+            console.log("Save Failed")
+            console.error(err)
+        }
+    }, "user=" + user.id + "&calendar=" + calendar)
 }
 
 function saveAvailability(free, datetime, user) {
