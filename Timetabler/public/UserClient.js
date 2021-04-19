@@ -60,12 +60,11 @@ function generateTimeTableBody(table, days, timeRange) {
 				th.appendChild(document.createTextNode(increment))
 				row.appendChild(th)
 			} else {
-				// let result = makeDataQuery(increment, day, user)
-				// if ()
-
 				const cell = row.insertCell()
         cell.classList.add('timetable-region');
         cell.setAttribute('tabindex', '0');
+        
+        cell.classList.add(queryAvailability(increment, day, user));
 			}
 		}
 	}
@@ -73,7 +72,9 @@ function generateTimeTableBody(table, days, timeRange) {
 	table.appendChild(tbody)
 }
 
-// function makeDataQuery(datetime, calendar, user) {}
+function queryAvailability(datetime, calendar, user) {
+	return ""
+}
 
 function toggleTblCellClass(cell) {
   if (cell.classList.contains('freetime')) {
