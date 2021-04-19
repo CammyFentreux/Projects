@@ -63,8 +63,10 @@ function generateTimeTableBody(table, days, timeRange) {
 				const cell = row.insertCell()
         cell.classList.add('timetable-region');
         cell.setAttribute('tabindex', '0');
-        
-        cell.classList.add(queryAvailability(increment, day, user));
+
+        const initialClass = queryAvailability(increment, day, user);
+        if (initialClass.length > 0)
+          cell.classList.add(initialClass);
 			}
 		}
 	}
