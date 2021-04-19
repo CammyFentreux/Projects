@@ -9,7 +9,7 @@ connection.query('CREATE TABLE IF NOT EXISTS user( id varchar(255) PRIMARY KEY N
   if (err == null) {
     connection.query('CREATE TABLE IF NOT EXISTS calendar( id varchar(255) PRIMARY KEY NOT NULL, title varchar(255) NOT NULL );', function(err, results, fields) {
       if (err == null) {
-        connection.query('CREATE TABLE IF NOT EXISTS availability( id varchar(255) PRIMARY KEY NOT NULL, user varchar(255) NOT NULL, calendar varchar(255) NOT NULL, datetime varchar(255) NOT NULL, free bool NOT NULL, CONSTRAINT fk_user FOREIGN KEY (user) REFERENCES user(id), CONSTRAINT fk_calendar FOREIGN KEY (calendar) REFERENCES calendar(id));', function(err, results, fields) {
+        connection.query('CREATE TABLE IF NOT EXISTS availability( PRIMARY KEY (user, calendar, datetime), user varchar(255) NOT NULL, calendar varchar(255) NOT NULL, datetime varchar(255) NOT NULL, free bool NOT NULL, CONSTRAINT fk_user FOREIGN KEY (user) REFERENCES user(id), CONSTRAINT fk_calendar FOREIGN KEY (calendar) REFERENCES calendar(id));', function(err, results, fields) {
           if (err == null) {
             connection.query('CREATE TABLE IF NOT EXISTS access( id varchar(255) PRIMARY KEY NOT NULL, user varchar(255) NOT NULL, calendar varchar(255) NOT NULL, access varchar(255) NOT NULL, CONSTRAINT fk_user_access FOREIGN KEY (user) REFERENCES user(id), CONSTRAINT fk_calendar_access FOREIGN KEY (calendar) REFERENCES calendar(id));', function(err, results, fields) {
               if (err == null) {
@@ -40,6 +40,11 @@ router.get('/admin', (req, res, next) => res.render('AdminClient'));
 
 router.get('/login', (req, res, next) => res.render('login'));
 
+router.post('/saveUserAvailability', (req, res, next) => {
+  connection.execute('INSERT INTO availability (user, calendar, datetime, free) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE free=?', [req.body.user, req.body.calendar, req.body.datetime, req.body.free, req.body.free], (err, results, fields) => {
+    res.send(err ? "failure" : "success")
+  })
+})
 router.post('/getUserAvailability', (req, res, next) => {
     connection.execute("SELECT free FROM availability WHERE user=? AND datetime=?;", [req.body.user, req.body.datetime], function(err, results, fields) {
         if (err == null) {

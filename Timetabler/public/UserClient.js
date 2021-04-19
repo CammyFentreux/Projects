@@ -29,19 +29,20 @@ const data = "{\n" +
 const user = {
     "id": "1",
     "username": "joe",
-    "password": "password"
+    "password": "password",
+		"calendar": "1"
 }
 const calendar = 1;
 
 function xhttpRequest(url, cFunction, sendStr, cFunctionParams) {
-    var xhttp;
+    let xhttp;
     if (window.XMLHttpRequest) {
         xhttp = new XMLHttpRequest();
     } else {
         xhttp = new ActiveXObject("Microsoft.XMLHTTP");
     }
     xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState === 4 && this.status === 200) {
             if (typeof cFunctionParams == 'undefined') {
                 cFunction(this);
             } else {
@@ -89,6 +90,7 @@ function generateTimeTableBody(table, days, timeRange) {
 				const cell = row.insertCell()
 				cell.onclick = (ev => toggleTblCellClass(ev.target))
         cell.classList.add('timetable-region')
+				cell.id = day + increment
         cell.setAttribute('tabindex', '0')
         queryAvailability(day.toLowerCase() + increment, calendar, user, cell)
 			}
@@ -96,6 +98,30 @@ function generateTimeTableBody(table, days, timeRange) {
 	}
 
 	table.appendChild(tbody)
+}
+
+function saveAvailabilities() {
+	let frees  = document.querySelectorAll("td.freetime")
+	let busies = document.querySelectorAll("td.busy")
+
+	for (let free of frees) {
+		saveAvailability(1, free.id, user)
+	}
+
+	for (let busy of busies) {
+		saveAvailability(0, busy.id, user)
+	}
+}
+
+function saveAvailability(free, datetime, user) {
+	xhttpRequest('/saveUserAvailability', (xhttp) => {
+		if (xhttp.responseText === "success") {
+			alert("Save Successful")
+		} else {
+			alert("Save Failed")
+			console.error(err)
+		}
+	})
 }
 
 function queryAvailability(datetime, calendar, user, cell) {
