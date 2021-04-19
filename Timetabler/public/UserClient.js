@@ -88,11 +88,10 @@ function generateTimeTableBody(table, days, timeRange) {
                 row.appendChild(th)
             } else {
                 const cell = row.insertCell()
-                cell.onclick = (ev => toggleTblCellClass(ev.target))
-        cell.classList.add('timetable-region')
+                cell.classList.add('timetable-region')
                 cell.id = day + increment
-        cell.setAttribute('tabindex', '0')
-        queryAvailability(day.toLowerCase() + increment, calendar, user, cell)
+                cell.setAttribute('tabindex', '0')
+                queryAvailability(day.toLowerCase() + increment, calendar, user, cell)
             }
         }
     }
