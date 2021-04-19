@@ -63,8 +63,9 @@ function generateTimeTableBody(table, days, timeRange) {
 				// let result = makeDataQuery(increment, day, user)
 				// if ()
 
-				let cell = row.insertCell()
-				cell.onclick = (ev => toggleTblCellClass(ev.target))
+				const cell = row.insertCell()
+        cell.classList.add('timetable-region');
+        cell.setAttribute('tabindex', '0');
 			}
 		}
 	}
@@ -75,21 +76,42 @@ function generateTimeTableBody(table, days, timeRange) {
 // function makeDataQuery(datetime, calendar, user) {}
 
 function toggleTblCellClass(cell) {
-	switch (cell.className) {
-		case "":
-			cell.className = "freetime"
-			break
-		case "freetime":
-			cell.className = "busy"
-			break
-		case "busy":
-			cell.className = ""
-			break
-		default:
-			console.error("tblTimeTable cell has invalid class")
-	}
+  if (cell.classList.contains('freetime')) {
+    cell.classList.remove('freetime');
+    cell.classList.add('busy');
+  } else if (cell.classList.contains('busy')) {
+    cell.classList.remove('busy');
+  } else {
+    cell.classList.add('freetime');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
 	generateTimeTable()
 })
+
+let isDragging = false;
+
+window.addEventListener('mousedown', function(e) {
+  if (e.target.classList.contains('timetable-region') && e.target.getAttribute('current-drag') !== 'true') {
+    isDragging = true;
+    e.target.setAttribute('current-drag', 'true');
+    e.preventDefault();
+    return toggleTblCellClass(e.target);
+  }
+});
+
+window.addEventListener('mousemove', function(e) {
+  if (isDragging && e.target.classList.contains('timetable-region') && e.target.getAttribute('current-drag') !== 'true') {
+    e.target.setAttribute('current-drag', 'true');
+    e.preventDefault();
+    return toggleTblCellClass(e.target);
+  }
+});
+window.addEventListener('mouseup', function(e) {
+  if (isDragging) {
+    isDragging = false;
+    document.querySelectorAll('.timetable-region[current-drag]')
+      .forEach(e => e.removeAttribute('current-drag'));
+  }
+});
