@@ -59,11 +59,9 @@ function generateTimeTableBody(table, days, timeRange) {
 				th.appendChild(document.createTextNode(increment))
 				row.appendChild(th)
 			} else {
-				// let result = makeDataQuery(increment, day, user)
-				// if ()
-
 				let cell = row.insertCell()
 				cell.onclick = (ev => toggleTblCellClass(ev.target))
+				cell.className = queryAvailability(increment, day, user)
 			}
 		}
 	}
@@ -71,7 +69,9 @@ function generateTimeTableBody(table, days, timeRange) {
 	table.appendChild(tbody)
 }
 
-// function makeDataQuery(datetime, calendar, user) {}
+function queryAvailability(datetime, calendar, user) {
+	return ""
+}
 
 function toggleTblCellClass(cell) {
 	switch (cell.className) {
