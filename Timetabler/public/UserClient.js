@@ -26,7 +26,33 @@ const data = "{\n" +
 		"    \"free\": \"0\"\n" +
 		"  }]\n" +
 		"}"
-const user = "bob"
+const user = {
+    "id": "1",
+    "username": "joe",
+    "password": "password"
+}
+const calendar = 1;
+
+function xhttpRequest(url, cFunction, sendStr, cFunctionParams) {
+    var xhttp;
+    if (window.XMLHttpRequest) {
+        xhttp = new XMLHttpRequest();
+    } else {
+        xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (typeof cFunctionParams == 'undefined') {
+                cFunction(this);
+            } else {
+                cFunction(this, cFunctionParams);
+            }
+        }
+    };
+    xhttp.open("POST", url, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(sendStr);
+}
 
 function generateTimeTable() {
 	const table     = document.getElementById("tblTimetable")
@@ -61,12 +87,10 @@ function generateTimeTableBody(table, days, timeRange) {
 				row.appendChild(th)
 			} else {
 				const cell = row.insertCell()
+				cell.onclick = (ev => toggleTblCellClass(ev.target))
         cell.classList.add('timetable-region')
         cell.setAttribute('tabindex', '0')
-
-        const initialClass = queryAvailability(increment, day, user)
-        if (initialClass.length > 0)
-          cell.classList.add(initialClass)
+        queryAvailability(day.toLowerCase() + increment, calendar, user, cell)
 			}
 		}
 	}
@@ -74,8 +98,12 @@ function generateTimeTableBody(table, days, timeRange) {
 	table.appendChild(tbody)
 }
 
-function queryAvailability(datetime, calendar, user) {
-	return ""
+function queryAvailability(datetime, calendar, user, cell) {
+    xhttpRequest('/getUserAvailability', function(xhttp) {
+        if (xhttp.responseText !== "empty") {
+            cell.className = xhttp.responseText === "1" ? "freetime" : "busy"
+        }
+    }, "user=" + user.id + "&datetime=" + datetime)
 }
 
 function toggleTblCellClass(cell) {
