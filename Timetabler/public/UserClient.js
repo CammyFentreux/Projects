@@ -100,28 +100,40 @@ function generateTimeTableBody(table, days, timeRange) {
 	table.appendChild(tbody)
 }
 
-function saveAvailabilities() {
+async function saveAvailabilities() {
 	let frees  = document.querySelectorAll("td.freetime")
 	let busies = document.querySelectorAll("td.busy")
 
 	for (let free of frees) {
-		saveAvailability(1, free.id, user)
+		await saveAvailability(1, free.id, user)
 	}
 
 	for (let busy of busies) {
-		saveAvailability(0, busy.id, user)
+		await saveAvailability(0, busy.id, user)
 	}
 }
 
-function saveAvailability(free, datetime, user) {
-	xhttpRequest('/saveUserAvailability', (xhttp) => {
+async function saveAvailability(free, datetime, user) {
+  return await fetch('/saveUserAvailability', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      free,
+      datetime,
+      user: user.id,
+      calendar: '1',
+    }),
+  });
+	/*xhttpRequest('/saveUserAvailability', (xhttp) => {
 		if (xhttp.responseText === "success") {
 			alert("Save Successful")
 		} else {
 			alert("Save Failed")
 			console.error(err)
 		}
-	})
+	})*/
 }
 
 function queryAvailability(datetime, calendar, user, cell) {

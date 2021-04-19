@@ -41,7 +41,11 @@ router.get('/admin', (req, res, next) => res.render('AdminClient'));
 router.get('/login', (req, res, next) => res.render('login'));
 
 router.post('/saveUserAvailability', (req, res, next) => {
-  connection.execute('INSERT INTO availability (user, calendar, datetime, free) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE free=?', [req.body.user, req.body.calendar, req.body.datetime, req.body.free, req.body.free], (err, results, fields) => {
+  if ([req.body.user, req.body.calendar, req.body.datetime, req.body.free].includes(undefined)) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute('INSERT INTO availability (id, user, calendar, datetime, free) VALUES (uuid(), ?, ?, ?, ?) ON DUPLICATE KEY UPDATE free=?', [req.body.user, req.body.calendar, req.body.datetime, req.body.free, req.body.free], (err, results, fields) => {
+    if (err) console.error(err);
     res.send(err ? "failure" : "success")
   })
 })
