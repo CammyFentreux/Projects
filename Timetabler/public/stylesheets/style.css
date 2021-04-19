@@ -9,6 +9,7 @@ body {
   height: 100vh;
   width: 100vw;
   margin: 0;
+  text-align: center;
 }
 
 body {
@@ -34,29 +35,27 @@ td {
   cursor: pointer;
 }
 
-.freetime,
-body.dark .freetime {
+.freetime {
   background-color: #6abb61;
 }
 
-.busy,
-body.dark .busy {
+.busy {
   background-color: #de2222;
 }
 
-#saveBtn {
+button {
   outline: none;
   border: none;
   border-radius: 0;
   padding: 10px 20px;
   box-shadow: 0px 0px 12px -8px;
-  margin: 15px auto 0;
-  display: block;
+  margin: 15px 5px 0;
+  display: inline-block;
   cursor: pointer;
   transition: transform .3s;
 }
 
-#saveBtn:active {
+button:active {
   transform: scale(.95);
 }
 
@@ -83,4 +82,10 @@ body.dark th {
   border: 1px solid #1c1c1c;
 }
 
+body.dark .freetime {
+  background-color: #3b7d33;
+}
 
+body.dark .busy {
+  background-color: #c82020;
+}

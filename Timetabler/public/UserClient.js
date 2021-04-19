@@ -152,6 +152,16 @@ function toggleTblCellClass(cell) {
 document.addEventListener('DOMContentLoaded', () => {
     generateTimeTable()
     document.getElementById("saveBtn").addEventListener("click", saveAvailabilities)
+    document.getElementById("lightDarkSwitch").addEventListener("click", function() {
+        let body = document.getElementsByTagName("body")[0];
+        if (body.classList.contains('dark')) {
+            this.innerText = "Dark Mode";
+            body.classList.remove('dark');
+        } else {
+            this.innerText = "Light Mode";
+            body.classList.add('dark');
+        }
+    })
 })
 
 let isDragging = false
