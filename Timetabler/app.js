@@ -4,6 +4,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const session = require('express-session');
+const memoryStore = require('memorystore')(session);
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -19,6 +21,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: 'haskell > java',
+  resave: false,
+  saveUninitialized: false,
+  store: new memoryStore({
+    checkPeriod: 86400000
+  })
+}));
 
 app.use((req, res, next) => {
   res.set('Content-Security-Policy', 'default-src \'self\'');

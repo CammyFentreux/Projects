@@ -43,7 +43,8 @@ td {
   background-color: #de2222;
 }
 
-button {
+button,
+input[type="submit"]{
   outline: none;
   border: none;
   border-radius: 0;
@@ -55,12 +56,14 @@ button {
   transition: transform .3s;
 }
 
-button:active {
+button:active,
+input[type="submit"]:active {
   transform: scale(.95);
 }
 
 body.dark {
   background-color: #1c1c1c;
+  color: #eee;
 }
 
 body.dark table {
@@ -69,7 +72,6 @@ body.dark table {
 
 body.dark th {
   background-color: #262626;
-  color: #eee;
   font-weight: normal;
 }
 
