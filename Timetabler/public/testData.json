@@ -1,0 +1,27 @@
+{
+  "availability": [{
+    "id": "0",
+    "user": "bob",
+    "calendar": "monday",
+    "datetime": "9",
+    "free": "1"
+  }, {
+    "id": "1",
+    "user": "bob",
+    "calendar": "monday",
+    "datetime": "10",
+    "free": "0"
+  }, {
+    "id": "2",
+    "user": "gerald",
+    "calendar": "monday",
+    "datetime": "9",
+    "free": "1"
+  }, {
+    "id": "3",
+    "user": "gerald",
+    "calendar": "monday",
+    "datetime": "11",
+    "free": "0"
+  }]
+}

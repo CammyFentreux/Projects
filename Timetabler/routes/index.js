@@ -40,4 +40,7 @@ router.get('/', function(req, res, next) {
   //})
 });
 
+router.get('/user', (req, res, next) => res.render('UserClient'))
+router.get('/admin', (req, res, next) => res.render('AdminClient'))
+
 module.exports = router;
