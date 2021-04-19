@@ -151,6 +151,7 @@ function toggleTblCellClass(cell) {
 
 document.addEventListener('DOMContentLoaded', () => {
     generateTimeTable()
+    document.getElementById("saveBtn").addEventListener("click", saveAvailabilities)
 })
 
 let isDragging = false
