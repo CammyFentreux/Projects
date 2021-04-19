@@ -1,8 +1,37 @@
+html {
+  height: 100%;
+}
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #676b6e;
+  height: calc(100% - 110px);
 }
 
 a {
   color: #00B7FF;
 }
+
+table {
+  width: 100%;
+  height: 100%;
+}
+
+th {
+  background-color: #e5945a;
+  width: 100px;
+}
+
+td {
+  background-color: #bfbebe
+}
+
+.freetime {
+  background-color: #6abb61;
+}
+
+.busy {
+  background-color: #de2222;
+}
+
