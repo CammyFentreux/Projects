@@ -1,3 +1,4 @@
+'use strict';
 const data = "{\n" +
 		"  \"availability\": [{\n" +
 		"    \"id\": \"0\",\n" +
