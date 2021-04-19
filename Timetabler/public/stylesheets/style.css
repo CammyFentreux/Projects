@@ -24,7 +24,8 @@ th {
 }
 
 td {
-  background-color: #bfbebe
+  background-color: #bfbebe;
+  cursor: pointer;
 }
 
 .freetime {

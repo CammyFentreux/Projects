@@ -1,3 +1,4 @@
+'use strict'
 const data = "{\n" +
 		"  \"availability\": [{\n" +
 		"    \"id\": \"0\",\n" +
@@ -85,9 +86,11 @@ function generateTimeTableBody(table, days, timeRange) {
 				th.appendChild(document.createTextNode(increment))
 				row.appendChild(th)
 			} else {
-				let cell = row.insertCell()
+				const cell = row.insertCell()
 				cell.onclick = (ev => toggleTblCellClass(ev.target))
-                queryAvailability(day.toLowerCase() + increment, calendar, user, cell)
+        cell.classList.add('timetable-region')
+        cell.setAttribute('tabindex', '0')
+        queryAvailability(day.toLowerCase() + increment, calendar, user, cell)
 			}
 		}
 	}
@@ -104,21 +107,42 @@ function queryAvailability(datetime, calendar, user, cell) {
 }
 
 function toggleTblCellClass(cell) {
-	switch (cell.className) {
-		case "":
-			cell.className = "freetime"
-			break
-		case "freetime":
-			cell.className = "busy"
-			break
-		case "busy":
-			cell.className = ""
-			break
-		default:
-			console.error("tblTimeTable cell has invalid class")
-	}
+  if (cell.classList.contains('freetime')) {
+    cell.classList.remove('freetime')
+    cell.classList.add('busy')
+  } else if (cell.classList.contains('busy')) {
+    cell.classList.remove('busy')
+  } else {
+    cell.classList.add('freetime')
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
 	generateTimeTable()
+})
+
+let isDragging = false
+
+
+window.addEventListener('mousedown', function(e) {
+  if (e.target.classList.contains('timetable-region')) {
+    e.target.setAttribute('current-drag', 'true')
+    isDragging = true
+    e.preventDefault()
+    return toggleTblCellClass(e.target)
+  }
+})
+window.addEventListener('mousemove', function(e) {
+  if (isDragging && e.target.classList.contains('timetable-region') && e.target.getAttribute('current-drag') !== 'true') {
+    e.target.setAttribute('current-drag', 'true')
+    e.preventDefault()
+    return toggleTblCellClass(e.target)
+  }
+})
+window.addEventListener('mouseup', function(e) {
+  if (isDragging) {
+    isDragging = false
+    document.querySelectorAll('.timetable-region[current-drag]')
+      .forEach(e => e.removeAttribute('current-drag'))
+  }
 })
