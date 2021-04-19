@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
 const loginDetails = require('../loginDetails.json');
 const connection = mysql.createConnection(loginDetails);
@@ -71,6 +72,59 @@ router.post('/getUserAvailability', (req, res, next) => {
       res.send("Error");
     }
   });
+});
+
+router.post('/register', (req, res, next) => {
+  bcrypt.hash(req.body.password, 10, function(err, hash) {
+    connection.execute("INSERT INTO user VALUES (uuid(), ?, ?);", [req.body.username, hash], function(err, results, fields) {
+      if (err == null) {
+        connection.execute("SELECT id FROM user WHERE username=?", [req.body.username], function(err, results, fields) {
+          if (err == null) {
+            req.session.userId = results[0].id;
+            res.redirect("/user");
+          } else {
+            res.send(err);
+          }
+        });
+      } else {
+        res.send(err);
+      }
+    });
+  });
+});
+
+router.post('/login', (req, res, next) => {
+  connection.execute("SELECT id, password FROM user WHERE username=?;", [req.body.username], function(err, results, fields) {
+    if (err === null) {
+      if (results[0]) {
+        bcrypt.compare(req.body.password, results[0].password, function(err, result) {
+          if (err) {
+            res.send("Error logging in: " + err);
+          } else {
+            if (result) {
+              req.session.userId = results[0].id;
+              res.redirect("/user");
+            } else {
+              res.send("Incorrect Credentials");
+            }
+          }
+        });
+      } else {
+        res.send("Incorrect Credentials")
+      }
+    } else {
+      res.send("Error logging in: " + err);
+    }
+  });
+});
+
+router.post('/logout', (req, res, next) => {
+  try {
+    req.session.destroy();
+    res.send("success");
+  } catch (err) {
+    res.send(err);
+  }
 });
 
 module.exports = router;
