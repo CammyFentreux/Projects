@@ -20,6 +20,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use((req, res, next) => {
+  res.set('Content-Security-Policy', 'default-src \'self\'');
+  res.set('Referrer-Policy', 'same-origin');
+  res.set('X-Frame-Options', 'DENY');
+  res.set('X-XSS-Protection', '1');
+  return next();
+});
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
