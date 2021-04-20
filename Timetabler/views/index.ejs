@@ -2,7 +2,7 @@
 <html>
   <head>
     <title><%= title %></title>
-    <script src="./index.js"></script>
+    <script src="./base.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body class="dark">
@@ -17,6 +17,9 @@
             </tr>
         <% } %>
     </table>
-    <button id="createCalendar">Create Calendar</button>
+    <form action="/createCalendar" method="POST">
+        <input type="text" name="calendarName" placeholder="Calendar Name">
+        <button type="submit">Create Calendar</button>
+    </form>
   </body>
 </html>

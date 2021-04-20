@@ -95,6 +95,29 @@ router.post('/getUserAvailability', middlewareAuth, (req, res, next) => {
   });
 });
 
+router.post('/createCalendar', middlewareAuth, (req, res, next) => {
+  if (req.body.calendarName === undefined) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute("SELECT uuid();", function(err, results, fields) {
+    let id = results[0]["uuid()"];
+    console.log(JSON.stringify(results));
+    if (err == null) {
+      connection.execute("INSERT INTO calendar VALUES (?, ?);", [id, req.body.calendarName], function(err, results, fields) {
+        if (err == null) {
+          connection.execute("INSERT INTO access VALUES (?, ?, 'admin');", [req.session.userId, id], function(err, results, fields) {
+            res.redirect("./user?calendar=" + id);
+          });
+        } else {
+          res.send("Error");
+        }
+      });
+    } else {
+      res.send("Error");
+    }
+  });
+});
+
 router.post('/register', (req, res, next) => {
   bcrypt.hash(req.body.password, 10, function(err, hash) {
     connection.execute("INSERT INTO user VALUES (uuid(), ?, ?);", [req.body.username, hash], function(err, results, fields) {
