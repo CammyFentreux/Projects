@@ -11,7 +11,7 @@
     <table>
         <% for (var i = 0; i < calendars.length; i++) { %>
             <tr>
-                <td><%= calendars[i].title %></td>
+                <td><a href="./user?calendar=<%= calendars[i].calendar %>"><%= calendars[i].title %></a></td>
                 <td><%= calendars[i].access %></td>
             </tr>
         <% } %>
