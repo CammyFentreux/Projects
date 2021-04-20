@@ -9,7 +9,7 @@ function xhttpRequest(url, cFunction, sendStr, cFunctionParams) {
                 cFunction(this, cFunctionParams)
             }
         }
-    };
+    }
     xhttp.open("POST", url, true)
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
     xhttp.send(sendStr)
@@ -42,11 +42,12 @@ function generateTimeTable() {
 /**
  * Generates the header of a timetable
  *
- * @param table  The `<table>` element to be built upon
- * @param days   An array of strings representing each column header. The first element should be appropriate for an filler column, allowing the left-most column row headers in the body
+ * @param {HTMLTableElement} table  The `<table>` element to be built upon
+ * @param {string[]}         days   An array of strings representing each column header. The first element should be appropriate for an filler column, allowing the left-most column row headers in the body
  * @see generateTimeTable
  */
 function generateTimeTableHead(table, days) {
+    console.log(table)
     let thead = table.createTHead(),
         row = thead.insertRow()
 
@@ -62,9 +63,9 @@ function generateTimeTableHead(table, days) {
  * <p>
  * The left-most column contains row headers denoting the time for each row
  *
- * @param table      The `<table>` element to be built upon
- * @param days       An array of strings representing each column header. The first element should be appropriate for a header of the row headers
- * @param timeRange  An array of times with length corresponding to the number of rows
+ * @param {HTMLTableElement} table      The `<table>` element to be built upon
+ * @param {string[]}         days       An array of strings representing each column header. The first element should be appropriate for a header of the row headers
+ * @param {string[]}         timeRange  An array of times with length corresponding to the number of rows
  * @see generateTimeTable
  */
 function generateTimeTableBody(table, days, timeRange) {
