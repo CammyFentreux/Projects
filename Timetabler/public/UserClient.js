@@ -1,39 +1,4 @@
 'use strict'
-const data = "{\n" +
-        "  \"availability\": [{\n" +
-        "    \"id\": \"0\",\n" +
-        "    \"user\": \"bob\",\n" +
-        "    \"calendar\": \"monday\",\n" +
-        "    \"datetime\": \"9\",\n" +
-        "    \"free\": \"1\"\n" +
-        "  }, {\n" +
-        "    \"id\": \"1\",\n" +
-        "    \"user\": \"bob\",\n" +
-        "    \"calendar\": \"monday\",\n" +
-        "    \"datetime\": \"10\",\n" +
-        "    \"free\": \"0\"\n" +
-        "  }, {\n" +
-        "    \"id\": \"2\",\n" +
-        "    \"user\": \"gerald\",\n" +
-        "    \"calendar\": \"monday\",\n" +
-        "    \"datetime\": \"9\",\n" +
-        "    \"free\": \"1\"\n" +
-        "  }, {\n" +
-        "    \"id\": \"3\",\n" +
-        "    \"user\": \"gerald\",\n" +
-        "    \"calendar\": \"monday\",\n" +
-        "    \"datetime\": \"11\",\n" +
-        "    \"free\": \"0\"\n" +
-        "  }]\n" +
-        "}"
-const user = {
-    "id": "1",
-    "username": "joe",
-    "password": "password",
-    "calendar": "1"
-}
-const calendar = 1;
-
 function xhttpRequest(url, cFunction, sendStr, cFunctionParams) {
     let xhttp;
     if (window.XMLHttpRequest) {
@@ -54,6 +19,17 @@ function xhttpRequest(url, cFunction, sendStr, cFunctionParams) {
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(sendStr);
 }
+
+function getParameterByName(name, url = window.location.href) {
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+const calendar = getParameterByName("calendar");
 
 function generateTimeTable() {
     const table     = document.getElementById("tblTimetable")
@@ -91,7 +67,7 @@ function generateTimeTableBody(table, days, timeRange) {
                 cell.classList.add('timetable-region')
                 cell.id = day + increment
                 cell.setAttribute('tabindex', '0')
-                queryAvailability(day.toLowerCase() + increment, calendar, user, cell)
+                queryAvailability(day.toLowerCase() + increment, cell)
             }
         }
     }
@@ -106,20 +82,20 @@ function saveAvailabilities() {
             let busies = document.querySelectorAll("td.busy")
 
             for (let cell of frees) {
-                saveAvailability(1, cell.id, user)
+                saveAvailability(1, cell.id)
             }
 
             for (let cell of busies) {
-                saveAvailability(0, cell.id, user)
+                saveAvailability(0, cell.id)
             }
         } else {
             console.log("Save Failed")
             console.error(err)
         }
-    }, "user=" + user.id + "&calendar=" + calendar)
+    }, "calendar=" + calendar)
 }
 
-function saveAvailability(free, datetime, user) {
+function saveAvailability(free, datetime) {
     xhttpRequest('/saveUserAvailability', (xhttp) => {
         if (xhttp.responseText === "success") {
             console.log("Save Successful")
@@ -127,15 +103,15 @@ function saveAvailability(free, datetime, user) {
             console.log("Save Failed")
             console.error(err)
         }
-    }, "user=" + user.id + "&calendar=" + calendar + "&datetime=" + datetime.toLowerCase() + "&free=" + free)
+    }, "calendar=" + calendar + "&datetime=" + datetime.toLowerCase() + "&free=" + free)
 }
 
-function queryAvailability(datetime, calendar, user, cell) {
+function queryAvailability(datetime, cell) {
     xhttpRequest('/getUserAvailability', function(xhttp) {
         if (xhttp.responseText !== "empty") {
             cell.classList.add(xhttp.responseText === "1" ? "freetime" : "busy")
         }
-    }, "user=" + user.id + "&datetime=" + datetime)
+    }, "calendar=" + calendar + "&datetime=" + datetime)
 }
 
 function toggleTblCellClass(cell) {
@@ -149,7 +125,7 @@ function toggleTblCellClass(cell) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
     generateTimeTable()
     document.getElementById("saveBtn").addEventListener("click", saveAvailabilities)
     document.getElementById("lightDarkSwitch").addEventListener("click", function() {
