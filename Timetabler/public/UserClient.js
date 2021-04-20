@@ -59,7 +59,7 @@ function saveAvailabilities() {
                 saveAvailability(0, cell.id)
             }
         } else {
-            console.log("Save Failed")
+            console.log("Save Failed on clearUserAvailability")
             console.error(err)
         }
     }, "calendar=" + calendar)
@@ -70,7 +70,7 @@ function saveAvailability(free, datetime) {
         if (xhttp.responseText === "success") {
             console.log("Save Successful")
         } else {
-            console.log("Save Failed")
+            console.log("Save Failed on saveUserAvailability")
             console.error(err)
         }
     }, "calendar=" + calendar + "&datetime=" + datetime.toLowerCase() + "&free=" + free)
