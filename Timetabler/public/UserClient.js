@@ -112,15 +112,14 @@ function saveAvailability(free, datetime) {
 /**
  * Queries the freeness/busyness of a single cell
  *
- * @param datetime  A string containing one of the row headers concatenated to one of the column headers, eg: "monday9" for monday at 9
- * @param cell      The cell to set availability for
+ * @param cell  The cell to set availability for
  */
-function queryAvailability(datetime, cell) {
+function queryAvailability(cell) {
 	xhttpRequest('/getUserAvailability', function(xhttp) {
 		if (xhttp.responseText !== "empty") {
 			cell.classList.add(xhttp.responseText === "1" ? "freetime" : "busy")
 		}
-	}, "calendar=" + calendar + "&datetime=" + datetime)
+	}, "calendar=" + calendar + "&datetime=" + cell.id)
 
 }
 /**
