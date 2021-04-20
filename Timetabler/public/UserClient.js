@@ -16,8 +16,8 @@ function generateTimeTable() {
 
 	generateTimeTableHead(table, days)
 	generateTimeTableBody(table, days, timeRange)
-
 }
+
 /**
  * Generates the header of a timetable
  *
@@ -34,8 +34,8 @@ function generateTimeTableHead(table, days) {
 		th.appendChild(document.createTextNode(day))
 		row.appendChild(th)
 	}
-
 }
+
 /**
  * Generates the body of a timetable.
  * <p>
@@ -68,6 +68,7 @@ function generateTimeTableBody(table, days, timeRange) {
 	}
 	table.appendChild(tbody)
 }
+
 /**
  * Saves the current calendar
  * <p>
@@ -84,7 +85,6 @@ function saveAvailabilities() {
 			for (let cell of frees) {
 				saveAvailability(1, cell.id)
 			}
-
 			for (let cell of busies) {
 				saveAvailability(0, cell.id)
 			}
@@ -93,6 +93,7 @@ function saveAvailabilities() {
 		}
 	}, "calendar=" + calendar)
 }
+
 /**
  * Saves a single cell of the calendar
  *
@@ -107,8 +108,8 @@ function saveAvailability(free, datetime) {
 			console.log("Save Failed on saveUserAvailability")
 		}
 	}, "calendar=" + calendar + "&datetime=" + datetime + "&free=" + free)
-
 }
+
 /**
  * Queries the freeness/busyness of a single cell
  *
@@ -120,8 +121,8 @@ function queryAvailability(cell) {
 			cell.classList.add(xhttp.responseText === "1" ? "freetime" : "busy")
 		}
 	}, "calendar=" + calendar + "&datetime=" + cell.id)
-
 }
+
 /**
  * Toggles the freeness of a cell.
  * <p>
@@ -178,6 +179,7 @@ window.addEventListener('mousedown', function(e) {
 		return toggleTblCellClass(e.target)
 	}
 })
+
 // Checks for when the mouse moves while clicked. Toggles the state of every cell entered, once per click and drag cycle
 window.addEventListener('mousemove', function(e) {
 	// if a drag is in progress and the mouse is over a cell and the cell has not yet been dragged over:
@@ -187,6 +189,7 @@ window.addEventListener('mousemove', function(e) {
 		return toggleTblCellClass(e.target)
 	}
 })
+
 // Checks for when the mouse is released, ending a drag selection of cells
 window.addEventListener('mouseup', function(e) {
 	if (isDragging) {
