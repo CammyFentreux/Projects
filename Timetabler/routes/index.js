@@ -95,6 +95,21 @@ router.post('/getUserAvailability', middlewareAuth, (req, res, next) => {
   });
 });
 
+router.post('/getAllAvailabilities', middlewareAuth, (req, res, next) => {
+  if (req.body.datetime === undefined || req.body.calendar === undefined) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute("SELECT free FROM availability WHERE calendar=? AND datetime=?;", [req.body.calendar, req.body.datetime], (err, results, fields) => {
+    if (err) {
+      res.send("Error");
+    } else if (results.length === 0) {
+      res.send("Empty")
+    } else {
+      res.send(results)
+    }
+  })
+})
+
 router.post('/createCalendar', middlewareAuth, (req, res, next) => {
   if (req.body.calendarName === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
