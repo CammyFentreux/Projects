@@ -139,7 +139,21 @@ function toggleTblCellClass(cell) {
 	} else {
 		cell.classList.add('freetime')
 	}
+}
 
+/**
+ * Toggles a dark theme
+ */
+function toggleDarkMode() {
+	let body = document.getElementsByTagName("body")[0]
+
+	if (body.classList.contains('dark')) {
+		this.innerText = "Dark Mode"
+		body.classList.remove('dark')
+	} else {
+		this.innerText = "Light Mode"
+		body.classList.add('dark')
+	}
 }
 
 // ------------- Events -------------
@@ -148,16 +162,7 @@ window.addEventListener('load', () => {
 	generateTimeTable()
 	// Set click events to UI elements
 	document.getElementById("saveBtn").addEventListener("click", saveAvailabilities)
-	document.getElementById("lightDarkSwitch").addEventListener("click", function() {
-		let body = document.getElementsByTagName("body")[0];
-		if (body.classList.contains('dark')) {
-			this.innerText = "Dark Mode";
-			body.classList.remove('dark');
-		} else {
-			this.innerText = "Light Mode";
-			body.classList.add('dark');
-		}
-	})
+	document.getElementById("lightDarkSwitch").addEventListener("click", toggleDarkMode)
 	document.getElementById("logoutBtn").addEventListener("click", function() {
 		xhttpRequest('logout', function(xhttp) {
 			window.location.href = "./login"
