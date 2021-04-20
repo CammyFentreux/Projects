@@ -29,7 +29,8 @@ function generateTimeTable() {
 function generateTimeTableHead(table, days) {
 	let thead = table.createTHead()
 	let row = thead.insertRow()
-	for (let day of days) {
+
+	for (let day of days) {  // for every day, create a table header and add a text node with the name of the day
 		let th = document.createElement("th")
 		th.appendChild(document.createTextNode(day))
 		row.appendChild(th)
@@ -53,11 +54,11 @@ function generateTimeTableBody(table, days, timeRange) {
 
 		let row = tbody.insertRow()
 		for (let day of days) {
-			if (day === "") {
-				let th = document.createElement("th")
+			if (day === "") {  // create row headers
+				const th = document.createElement("th")
 				th.appendChild(document.createTextNode(increment))
 				row.appendChild(th)
-			} else {
+			} else {           // create normal cells
 				const cell = row.insertCell()
 				cell.classList.add('timetable-region')
 				cell.id = day + increment
@@ -150,6 +151,7 @@ function toggleTblCellClass(cell) {
 // Sets up the page on load
 window.addEventListener('load', () => {
 	generateTimeTable()
+	// Set click events to UI elements
 	document.getElementById("saveBtn").addEventListener("click", saveAvailabilities)
 	document.getElementById("lightDarkSwitch").addEventListener("click", function() {
 		let body = document.getElementsByTagName("body")[0];
@@ -163,7 +165,7 @@ window.addEventListener('load', () => {
 	})
 	document.getElementById("logoutBtn").addEventListener("click", function() {
 		xhttpRequest('logout', function(xhttp) {
-			window.location.href = "./login";
+			window.location.href = "./login"
 		})
 	})
 })
@@ -179,6 +181,7 @@ window.addEventListener('mousedown', function(e) {
 })
 // Checks for when the mouse moves while clicked. Toggles the state of every cell entered, once per click and drag cycle
 window.addEventListener('mousemove', function(e) {
+	// if a drag is in progress and the mouse is over a cell and the cell has not yet been dragged over:
 	if (isDragging && e.target.classList.contains('timetable-region') && e.target.getAttribute('current-drag') !== 'true') {
 		e.target.setAttribute('current-drag', 'true')
 		e.preventDefault()
