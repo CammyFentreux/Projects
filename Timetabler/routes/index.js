@@ -45,7 +45,12 @@ connection.query('CREATE TABLE IF NOT EXISTS user( id varchar(255) PRIMARY KEY N
 
 
 /* GET methods */
-router.get('/', middlewareAuth, (req, res, next) => res.render('index', { title: 'Timetabler' }));
+router.get('/', middlewareAuth, (req, res, next) => {
+  connection.execute('SELECT access.calendar, access.access, calendar.title FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=?;', [req.session.userId], (err, results, fields) => {
+    console.log(JSON.stringify(results));
+    res.render('index', { title: 'Timetabler', calendars: results });
+  });
+});
 router.get('/user', middlewareAuth, (req, res, next) => res.render('UserClient'));
 router.get('/admin', middlewareAuth, (req, res, next) => res.render('AdminClient'));
 router.get('/login', (req, res, next) => res.render('login'));
@@ -95,7 +100,7 @@ router.post('/register', (req, res, next) => {
         connection.execute("SELECT id FROM user WHERE username=?", [req.body.username], function(err, results, fields) {
           if (err == null) {
             req.session.userId = results[0].id;
-            res.redirect("/user");
+            res.redirect("/");
           } else {
             res.send(err);
           }
@@ -117,7 +122,7 @@ router.post('/login', (req, res, next) => {
           } else {
             if (result) {
               req.session.userId = results[0].id;
-              res.redirect("/user");
+              res.redirect("/");
             } else {
               res.send("Incorrect Credentials");
             }
