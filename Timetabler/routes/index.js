@@ -48,7 +48,7 @@ connection.query('CREATE TABLE IF NOT EXISTS user( id varchar(255) PRIMARY KEY N
 router.get('/', middlewareAuth, (req, res, next) => {
   connection.execute('SELECT access.calendar, access.access, calendar.title FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=?;', [req.session.userId], (err, results, fields) => {
     console.log(JSON.stringify(results));
-    res.render('index', { title: 'Timetabler', calendars: results });
+    res.render('index', { title: 'Timetabler' });
   });
 });
 router.get('/user', middlewareAuth, (req, res, next) => {
