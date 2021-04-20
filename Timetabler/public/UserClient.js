@@ -75,21 +75,6 @@ function toggleTblCellClass(cell) {
 	}
 }
 
-/**
- * Toggles a dark theme
- */
-function toggleDarkMode() {
-	let body = document.getElementsByTagName("body")[0]
-
-	if (body.classList.contains('dark')) {
-		this.innerText = "Dark Mode"
-		body.classList.remove('dark')
-	} else {
-		this.innerText = "Light Mode"
-		body.classList.add('dark')
-	}
-}
-
 // ------------- Events -------------
 // Sets up the page on load
 window.addEventListener('load', () => {

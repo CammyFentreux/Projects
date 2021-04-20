@@ -25,6 +25,21 @@ function getParameterByName(name, url = window.location.href) {
 }
 
 /**
+ * Toggles a dark theme
+ */
+function toggleDarkMode() {
+    let body = document.getElementsByTagName("body")[0]
+
+    if (body.classList.contains('dark')) {
+        this.innerText = "Dark Mode"
+        body.classList.remove('dark')
+    } else {
+        this.innerText = "Light Mode"
+        body.classList.add('dark')
+    }
+}
+
+/**
  * Generates a timetable of variable time frame
  * <p>
  * The table is created in a `<table>` with an id of 'tblTimetable'
