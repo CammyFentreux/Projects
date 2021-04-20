@@ -48,10 +48,12 @@ connection.query('CREATE TABLE IF NOT EXISTS user( id varchar(255) PRIMARY KEY N
 router.get('/', middlewareAuth, (req, res, next) => {
   connection.execute('SELECT access.calendar, access.access, calendar.title FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=?;', [req.session.userId], (err, results, fields) => {
     console.log(JSON.stringify(results));
-    res.render('index', { title: 'Timetabler', calendars: results });
+    res.render('index', { title: 'Timetabler' });
   });
 });
-router.get('/user', middlewareAuth, (req, res, next) => res.render('UserClient'));
+router.get('/user', middlewareAuth, (req, res, next) => {
+  res.render('UserClient', {calendar: req.query.calendar});
+});
 router.get('/admin', middlewareAuth, (req, res, next) => res.render('AdminClient'));
 router.get('/login', (req, res, next) => res.render('login'));
 
@@ -80,7 +82,7 @@ router.post('/getUserAvailability', middlewareAuth, (req, res, next) => {
   if (req.body.datetime === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
-  connection.execute("SELECT free FROM availability WHERE user=? AND datetime=?;", [req.session.userId, req.body.datetime], function(err, results, fields) {
+  connection.execute("SELECT free FROM availability WHERE user=? AND calendar=? AND datetime=?;", [req.session.userId, req.body.calendar, req.body.datetime], function(err, results, fields) {
     if (err == null) {
       if (results[0]) {
         res.send(results[0].free + "");
