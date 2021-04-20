@@ -162,6 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
             body.classList.add('dark');
         }
     })
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+        xhttpRequest('logout', function(xhttp) {
+            window.location.href = "./login";
+        })
+    })
 })
 
 let isDragging = false

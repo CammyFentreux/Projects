@@ -5,6 +5,17 @@ const mysql = require('mysql2');
 const loginDetails = require('../loginDetails.json');
 const connection = mysql.createConnection(loginDetails);
 
+function middlewareAuth(req, res, next) {
+  if (req.session && req.session.userId) {
+    connection.query('SELECT * FROM user WHERE id=?', [req.session.userId], function(err, results, fields) {
+      if (results[0]) next();
+      else res.redirect("/login");
+    });
+  } else {
+    res.redirect("/login");
+  }
+}
+
 //set up db
 connection.query('CREATE TABLE IF NOT EXISTS user( id varchar(255) PRIMARY KEY NOT NULL, username varchar(255) UNIQUE NOT NULL, password varchar(255) NOT NULL );', function(err, results, fields) {
   if (err == null) {
@@ -12,7 +23,7 @@ connection.query('CREATE TABLE IF NOT EXISTS user( id varchar(255) PRIMARY KEY N
       if (err == null) {
         connection.query('CREATE TABLE IF NOT EXISTS availability( PRIMARY KEY (user, calendar, datetime), user varchar(255) NOT NULL, calendar varchar(255) NOT NULL, datetime varchar(255) NOT NULL, free bool NOT NULL, CONSTRAINT fk_user FOREIGN KEY (user) REFERENCES user(id), CONSTRAINT fk_calendar FOREIGN KEY (calendar) REFERENCES calendar(id));', function(err, results, fields) {
           if (err == null) {
-            connection.query('CREATE TABLE IF NOT EXISTS access( id varchar(255) PRIMARY KEY NOT NULL, user varchar(255) NOT NULL, calendar varchar(255) NOT NULL, access varchar(255) NOT NULL, CONSTRAINT fk_user_access FOREIGN KEY (user) REFERENCES user(id), CONSTRAINT fk_calendar_access FOREIGN KEY (calendar) REFERENCES calendar(id));', function(err, results, fields) {
+            connection.query('CREATE TABLE IF NOT EXISTS access( PRIMARY KEY (user, calendar), user varchar(255) NOT NULL, calendar varchar(255) NOT NULL, access varchar(255) NOT NULL, CONSTRAINT fk_user_access FOREIGN KEY (user) REFERENCES user(id), CONSTRAINT fk_calendar_access FOREIGN KEY (calendar) REFERENCES calendar(id));', function(err, results, fields) {
               if (err == null) {
                 console.log("DB set up");
               } else {
@@ -34,34 +45,42 @@ connection.query('CREATE TABLE IF NOT EXISTS user( id varchar(255) PRIMARY KEY N
 
 
 /* GET methods */
-router.get('/', (req, res, next) => res.render('index', { title: 'Timetabler' }));
-router.get('/user', (req, res, next) => res.render('UserClient'));
-router.get('/admin', (req, res, next) => res.render('AdminClient'));
+router.get('/', middlewareAuth, (req, res, next) => {
+  connection.execute('SELECT access.calendar, access.access, calendar.title FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=?;', [req.session.userId], (err, results, fields) => {
+    console.log(JSON.stringify(results));
+    res.render('index', { title: 'Timetabler', calendars: results });
+  });
+});
+router.get('/user', middlewareAuth, (req, res, next) => res.render('UserClient'));
+router.get('/admin', middlewareAuth, (req, res, next) => res.render('AdminClient'));
 router.get('/login', (req, res, next) => res.render('login'));
 
 /* POST methods */
-router.post('/clearUserAvailability', (req, res, next) => {
-  if ([req.body.user, req.body.calendar].includes(undefined)) {
+router.post('/clearUserAvailability', middlewareAuth, (req, res, next) => {
+  if (req.body.calendar === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
-  connection.execute('DELETE FROM availability WHERE user=? AND calendar=?', [req.body.user, req.body.calendar], (err, results, fields) => {
+  connection.execute('DELETE FROM availability WHERE user=? AND calendar=?', [req.session.userId, req.body.calendar], (err, results, fields) => {
     if (err) console.error(err);
     res.send(err ? "failure" : "success");
   });
 });
 
-router.post('/saveUserAvailability', (req, res, next) => {
-  if ([req.body.user, req.body.calendar, req.body.datetime, req.body.free].includes(undefined)) {
+router.post('/saveUserAvailability', middlewareAuth, (req, res, next) => {
+  if ([req.body.calendar, req.body.datetime, req.body.free].includes(undefined)) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
-  connection.execute('INSERT INTO availability (user, calendar, datetime, free) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE free=?', [req.body.user, req.body.calendar, req.body.datetime, req.body.free, req.body.free], (err, results, fields) => {
+  connection.execute('INSERT INTO availability (user, calendar, datetime, free) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE free=?', [req.session.userId, req.body.calendar, req.body.datetime, req.body.free, req.body.free], (err, results, fields) => {
     if (err) console.error(err);
     res.send(err ? "failure" : "success");
   });
 });
 
-router.post('/getUserAvailability', (req, res, next) => {
-  connection.execute("SELECT free FROM availability WHERE user=? AND datetime=?;", [req.body.user, req.body.datetime], function(err, results, fields) {
+router.post('/getUserAvailability', middlewareAuth, (req, res, next) => {
+  if (req.body.datetime === undefined) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute("SELECT free FROM availability WHERE user=? AND datetime=?;", [req.session.userId, req.body.datetime], function(err, results, fields) {
     if (err == null) {
       if (results[0]) {
         res.send(results[0].free + "");
@@ -81,7 +100,7 @@ router.post('/register', (req, res, next) => {
         connection.execute("SELECT id FROM user WHERE username=?", [req.body.username], function(err, results, fields) {
           if (err == null) {
             req.session.userId = results[0].id;
-            res.redirect("/user");
+            res.redirect("/");
           } else {
             res.send(err);
           }
@@ -103,7 +122,7 @@ router.post('/login', (req, res, next) => {
           } else {
             if (result) {
               req.session.userId = results[0].id;
-              res.redirect("/user");
+              res.redirect("/");
             } else {
               res.send("Incorrect Credentials");
             }
@@ -118,7 +137,7 @@ router.post('/login', (req, res, next) => {
   });
 });
 
-router.post('/logout', (req, res, next) => {
+router.post('/logout', middlewareAuth, (req, res, next) => {
   try {
     req.session.destroy();
     res.send("success");
