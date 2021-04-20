@@ -62,7 +62,6 @@ function generateTimeTable() {
  * @see generateTimeTable
  */
 function generateTimeTableHead(table, days) {
-    console.log(table)
     let thead = table.createTHead(),
         row = thead.insertRow()
 
