@@ -80,9 +80,12 @@ function toggleTblCellClass(cell) {
 window.addEventListener('load', () => {
 	// Set click events to UI elements
 	document.getElementById("saveBtn").addEventListener("click", saveAvailabilities)
-    document.getElementById("adminBtn").addEventListener("click", function() {
-        window.location.href="./admin?calendar=" + calendar
-    })
+    var adminBtn = document.getElementById("adminBtn");
+    if (adminBtn) {
+        adminBtn.addEventListener("click", function() {
+            window.location.href="./admin?calendar=" + calendar
+        })
+    }
 })
 
 // Checks for when the mouse clicked to begin the drag selection of cells

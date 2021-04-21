@@ -52,7 +52,17 @@ router.get('/', middlewareAuth, (req, res, next) => {
   });
 });
 router.get('/user', middlewareAuth, (req, res, next) => {
-  res.render('UserClient');
+  connection.execute('SELECT access FROM access WHERE user=? AND calendar=?', [req.session.userId, req.query.calendar], function(err, results, fields) {
+    if (results[0] === null) {
+      res.redirect("./");
+    } else {
+      if (err === null) {
+        res.render('UserClient', {access: results[0].access});
+      } else {
+        res.send(err);
+      }
+    }
+  })
 });
 router.get('/admin', middlewareAuth, (req, res, next) => res.render('AdminClient', {calendar: req.query.calendar}));
 router.get('/login', (req, res, next) => res.render('login'));
