@@ -13,13 +13,18 @@
     <table>
         <% for (var i = 0; i < calendars.length; i++) { %>
             <tr>
-                <td><a href="./user?calendar=<%= calendars[i].calendar %>"><%= calendars[i].title %></a></td>
                 <% if (calendars[i].access === "invited") { %>
+                    <td><%= calendars[i].title %></td>
                     <td>Invited: 
                         <a href="javascript:void(0)" class="acceptInvite" data-calendar="<%= calendars[i].calendar %>">Accept</a>
                         <a href="javascript:void(0)" class="declineInvite" data-calendar="<%= calendars[i].calendar %>">Decline</a>
                     </td>
                 <% } else { %>
+                    <% if (calendars[i].access === "admin") { %>
+                        <td><a href="./admin?calendar=<%= calendars[i].calendar %>"><%= calendars[i].title %></a></td>
+                    <% } else { %>
+                        <td><a href="./user?calendar=<%= calendars[i].calendar %>"><%= calendars[i].title %></a></td>
+                    <% } %>
                     <td><%= calendars[i].access %></td>
                 <% } %>
             </tr>
