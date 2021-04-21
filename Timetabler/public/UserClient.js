@@ -78,15 +78,11 @@ function toggleTblCellClass(cell) {
 // ------------- Events -------------
 // Sets up the page on load
 window.addEventListener('load', () => {
-	generateTimeTable()
 	// Set click events to UI elements
 	document.getElementById("saveBtn").addEventListener("click", saveAvailabilities)
-	document.getElementById("lightDarkSwitch").addEventListener("click", toggleDarkMode)
-	document.getElementById("logoutBtn").addEventListener("click", function() {
-		xhttpRequest('logout', function(xhttp) {
-			window.location.href = "./login"
-		})
-	})
+    document.getElementById("adminBtn").addEventListener("click", function() {
+        window.location.href="./admin?calendar=" + calendar
+    })
 })
 
 // Checks for when the mouse clicked to begin the drag selection of cells

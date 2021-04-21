@@ -47,12 +47,7 @@ function getRGB(type) {
 // ---------- Events ----------
 // Sets up the page on load
 window.addEventListener('load', () => {
-	generateTimeTable()
-	// Set click events to UI elements
-	document.getElementById("lightDarkSwitch").addEventListener("click", toggleDarkMode)
-	document.getElementById("logoutBtn").addEventListener("click", function() {
-		xhttpRequest('logout', function(xhttp) {
-			window.location.href = "./login"
-		})
-	})
+    document.getElementById("userBtn").addEventListener("click", function() {
+        window.location.href="./user?calendar=" + calendar
+    })
 })
