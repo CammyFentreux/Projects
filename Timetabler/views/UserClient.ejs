@@ -3,12 +3,17 @@
     <head>
         <meta charset="UTF-8">
         <script src="base.js"></script>
+        <script src="timetable.js"></script>
         <script src="UserClient.js"></script>
         <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
         <title>Timetable Poller</title>
     </head>
     <body class="dark">
         <table id="tblTimetable"></table>
+        <button id="homeBtn">Home</button>
+        <% if (access == "admin") { %>
+            <button id="adminBtn">Admin View</button>
+        <% } %>
         <button id="saveBtn">Save</button>
         <button id="lightDarkSwitch">Light Mode</button>
         <button id="logoutBtn">Log Out</button>

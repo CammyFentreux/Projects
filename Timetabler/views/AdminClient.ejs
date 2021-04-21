@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script src="AdminClient.js"></script>
-    <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
-    <title>Timetable Poller</title>
-</head>
-<body>
-<table id="tblTimetable"></table>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <script src="base.js"></script>
+        <script src="timetable.js"></script>
+        <script src="AdminClient.js"></script>
+        <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+        <title>Timetable Poller</title>
+    </head>
+    <body class="dark">
+        <table id="tblTimetable"></table>
+        <button id="homeBtn">Home</button>
+        <button id="userBtn">Enter My Availability</button>
+        <button id="lightDarkSwitch">Light Mode</button>
+        <button id="logoutBtn">Log Out</button>
+        <form action="/inviteUser" method="POST">
+            <input type="text" name="calendar" class="hide" value="<%= calendar %>" readonly>
+            <input type="text" name="username" placeholder="Username">
+            <button type="submit">Invite User</button>
+        </form>
+    </body>
 </html>

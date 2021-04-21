@@ -52,9 +52,19 @@ router.get('/', middlewareAuth, (req, res, next) => {
   });
 });
 router.get('/user', middlewareAuth, (req, res, next) => {
-  res.render('UserClient');
+  connection.execute('SELECT access FROM access WHERE user=? AND calendar=?', [req.session.userId, req.query.calendar], function(err, results, fields) {
+    if (results[0] === null) {
+      res.redirect("./");
+    } else {
+      if (err === null) {
+        res.render('UserClient', {access: results[0].access});
+      } else {
+        res.send(err);
+      }
+    }
+  })
 });
-router.get('/admin', middlewareAuth, (req, res, next) => res.render('AdminClient'));
+router.get('/admin', middlewareAuth, (req, res, next) => res.render('AdminClient', {calendar: req.query.calendar}));
 router.get('/login', (req, res, next) => res.render('login'));
 
 /* POST methods */
@@ -95,6 +105,21 @@ router.post('/getUserAvailability', middlewareAuth, (req, res, next) => {
   });
 });
 
+router.post('/getAllAvailabilities', middlewareAuth, (req, res, next) => {
+  if (req.body.datetime === undefined || req.body.calendar === undefined) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute("SELECT free FROM availability WHERE calendar=? AND datetime=?;", [req.body.calendar, req.body.datetime], (err, results, fields) => {
+    if (err) {
+      res.send("Error");
+    } else if (results.length === 0) {
+      res.send("Empty")
+    } else {
+      res.send(results)
+    }
+  })
+})
+
 router.post('/createCalendar', middlewareAuth, (req, res, next) => {
   if (req.body.calendarName === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
@@ -102,9 +127,9 @@ router.post('/createCalendar', middlewareAuth, (req, res, next) => {
   connection.execute("SELECT uuid();", function(err, results, fields) {
     let id = results[0]["uuid()"];
     console.log(JSON.stringify(results));
-    if (err == null) {
+    if (err === null) {
       connection.execute("INSERT INTO calendar VALUES (?, ?);", [id, req.body.calendarName], function(err, results, fields) {
-        if (err == null) {
+        if (err === null) {
           connection.execute("INSERT INTO access VALUES (?, ?, 'admin');", [req.session.userId, id], function(err, results, fields) {
             res.redirect("./user?calendar=" + id);
           });
@@ -117,6 +142,52 @@ router.post('/createCalendar', middlewareAuth, (req, res, next) => {
     }
   });
 });
+
+router.post('/inviteUser', middlewareAuth, (req, res, next) => {
+  if (req.body.username === undefined || req.body.calendar === undefined) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute("SELECT id FROM user WHERE username=?", [req.body.username], function(err, results, fields) {
+    if (err === null && results[0] !== null) {
+      console.log(JSON.stringify(results[0]));
+      connection.execute("INSERT INTO access VALUES (?, ?, 'invited')", [results[0].id, req.body.calendar], function(err, results, fields) {
+        if (err === null) {
+          res.redirect("/user?calendar=" + req.body.calendar);
+        } else {
+          res.send(err);
+        }
+      });
+    } else {
+      res.send("Error");
+    }
+  });
+});
+
+router.post('/acceptInvite', middlewareAuth, (req, res, next) => {
+  if (req.body.calendar === undefined) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute("UPDATE access SET access='user' WHERE user=? AND calendar=?", [req.session.userId, req.body.calendar], function(err, results, fields) {
+    if (err === null) {
+      res.send("success");
+    } else {
+      res.send(err);
+    }
+  });
+});
+
+router.post('/declineInvite', middlewareAuth, (req, res, next) => {
+  if (req.body.calendar === undefined) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute("DELETE FROM access WHERE user=? AND calendar=?", [req.session.userId, req.body.calendar], function(err, results, fields) {
+    if (err === null) {
+      res.send("success");
+    } else {
+      res.send(err);
+    }
+  });
+})
 
 router.post('/register', (req, res, next) => {
   bcrypt.hash(req.body.password, 10, function(err, hash) {
