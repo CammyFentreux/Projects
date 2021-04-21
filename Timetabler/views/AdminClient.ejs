@@ -10,7 +10,13 @@
     </head>
     <body class="dark">
         <table id="tblTimetable"></table>
+        <button id="homeBtn">Home</button>
         <button id="lightDarkSwitch">Light Mode</button>
         <button id="logoutBtn">Log Out</button>
+        <form action="/inviteUser" method="POST">
+            <input type="text" name="calendar" class="hide" value="<%= calendar %>" readonly>
+            <input type="text" name="username" placeholder="Username">
+            <button type="submit">Invite User</button>
+        </form>
     </body>
 </html>

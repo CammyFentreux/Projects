@@ -20,6 +20,10 @@ a {
   color: #00B7FF;
 }
 
+.hide {
+  display: none;
+}
+
 #tblTimetable {
   width: 100%;
   height: 100%;

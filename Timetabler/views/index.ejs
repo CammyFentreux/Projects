@@ -3,7 +3,7 @@
   <head>
     <title><%= title %></title>
     <script src="./base.js"></script>
-    <script src="./timetable.js"></script>
+    <script src="./index.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body class="dark">
@@ -14,7 +14,14 @@
         <% for (var i = 0; i < calendars.length; i++) { %>
             <tr>
                 <td><a href="./user?calendar=<%= calendars[i].calendar %>"><%= calendars[i].title %></a></td>
-                <td><%= calendars[i].access %></td>
+                <% if (calendars[i].access === "invited") { %>
+                    <td>Invited: 
+                        <a href="javascript:void(0)" class="acceptInvite" data-calendar="<%= calendars[i].calendar %>">Accept</a>
+                        <a href="javascript:void(0)" class="declineInvite" data-calendar="<%= calendars[i].calendar %>">Decline</a>
+                    </td>
+                <% } else { %>
+                    <td><%= calendars[i].access %></td>
+                <% } %>
             </tr>
         <% } %>
     </table>
