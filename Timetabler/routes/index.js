@@ -52,19 +52,31 @@ router.get('/', middlewareAuth, (req, res, next) => {
   });
 });
 router.get('/user', middlewareAuth, (req, res, next) => {
-  connection.execute('SELECT access FROM access WHERE user=? AND calendar=?', [req.session.userId, req.query.calendar], function(err, results, fields) {
+  connection.execute('SELECT access.access, calendar.title FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=? AND calendar.id=?', [req.session.userId, req.query.calendar], function(err, results, fields) {
     if (results[0] === null) {
       res.redirect("./");
     } else {
       if (err === null) {
-        res.render('UserClient', {access: results[0].access});
+        res.render('UserClient', {access: results[0].access, calendarTitle: results[0].title});
       } else {
         res.send(err);
       }
     }
   })
 });
-router.get('/admin', middlewareAuth, (req, res, next) => res.render('AdminClient', {calendar: req.query.calendar}));
+router.get('/admin', middlewareAuth, (req, res, next) => {
+  connection.execute('SELECT title FROM calendar WHERE id=?;', [req.query.calendar], function(err, results, fields) {
+    if (results[0] === null) {
+      res.redirect("./");
+    } else {
+      if (err === null) {
+        res.render('AdminClient', {calendar: req.query.calendar, calendarTitle: results[0].title});
+      } else {
+        res.send(err);
+      }
+    }
+  });
+});
 router.get('/login', (req, res, next) => res.render('login'));
 
 /* POST methods */
