@@ -1,0 +1,49 @@
+#tblTimetable {
+  width: 100%;
+  height: calc(100vh - 300px);
+  min-height: 600px;
+}
+
+#tblTimetable th {
+  background-color: #e5945a;
+  width: 100px;
+}
+
+#tblTimetable td {
+  background-color: #bfbebe;
+  cursor: pointer;
+}
+
+#tblTimetable .freetime {
+  background-color: #6abb61;
+}
+
+#tblTimetable .busy {
+  background-color: #de2222;
+}
+
+body.dark #tblTimetable {
+  border-collapse: collapse;
+}
+
+body.dark #tblTimetable th {
+  background-color: #262626;
+  font-weight: normal;
+}
+
+body.dark #tblTimetable td {
+  background-color: #373737;
+}
+
+body.dark #tblTimetable td,
+body.dark #tblTimetable th {
+  border: 1px solid #1c1c1c;
+}
+
+body.dark #tblTimetable .freetime {
+  background-color: #3b7d33;
+}
+
+body.dark #tblTimetable .busy {
+  background-color: #c82020;
+}
