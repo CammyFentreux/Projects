@@ -5,7 +5,7 @@
 html,
 body {
   font: 17px "Lucida Grande", Helvetica, Arial, sans-serif;
-  width: 100vw;
+  width: 100%;
   margin: 0;
   text-align: center;
 }
