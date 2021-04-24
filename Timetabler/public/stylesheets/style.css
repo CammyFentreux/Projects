@@ -27,34 +27,6 @@ a {
   display: none;
 }
 
-#tblTimetable {
-  width: 100%;
-  height: calc(100vh - 300px);
-  min-height: 600px;
-}
-
-#heatmapControlPanel {
-
-}
-
-#tblTimetable th {
-  background-color: #e5945a;
-  width: 100px;
-}
-
-#tblTimetable td {
-  background-color: #bfbebe;
-  cursor: pointer;
-}
-
-#tblTimetable .freetime {
-  background-color: #6abb61;
-}
-
-#tblTimetable .busy {
-  background-color: #de2222;
-}
-
 button,
 input[type="submit"]{
   outline: none;
@@ -73,34 +45,60 @@ input[type="submit"]:active {
   transform: scale(.95);
 }
 
+input[type="text"],
+input[type="password"] {
+    margin-bottom: 20px;
+    margin-top: 10px;
+    border-radius: 0;
+    border: none;
+    padding: 10px;
+    transition: width .6s;
+    width: 50%;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: 2px solid #9eb6fd;
+    width: 90%;
+}
+
 body.dark {
   background-color: #1c1c1c;
   color: #eee;
 }
 
-body.dark #tblTimetable {
-  border-collapse: collapse;
+.closeBtn {
+    position: absolute;
+    top: 15px;
+    right: 14px;
+    margin: 0;
+    padding: 10px;
+    background-color: inherit;
+    color: white;
+    font-size: 21px;
+    box-shadow: none;
 }
 
-body.dark #tblTimetable th {
-  background-color: #262626;
-  font-weight: normal;
+.closeBtn::before,
+.closeBtn::after {
+    content: "";
+    width: 2px;
+    height: 20px;
+    background-color: white;
+    display: block;
+    position: absolute;
 }
 
-body.dark #tblTimetable td {
-  background-color: #373737;
+.closeBtn::before {
+    transform: rotate(45deg) translate(-8px, -6px);
 }
 
-body.dark #tblTimetable td,
-body.dark #tblTimetable th {
-  border: 1px solid #1c1c1c;
+.closeBtn::after {
+    transform: rotate(-45deg) translate(6px, -8px);
 }
 
-body.dark #tblTimetable .freetime {
-  background-color: #3b7d33;
-}
-
-body.dark #tblTimetable .busy {
-  background-color: #c82020;
+.subLabel {
+    font-size: .8em;
+    color: #919191;
 }
 

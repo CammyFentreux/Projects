@@ -5,6 +5,7 @@
     <script src="./base.js"></script>
     <script src="./index.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/index.css' />
   </head>
   <body class="dark">
     <h1><%= title %></h1>
@@ -30,9 +31,18 @@
             </tr>
         <% } %>
     </table>
-    <form action="/createCalendar" method="POST">
-        <input type="text" name="calendarName" placeholder="Calendar Name">
-        <button type="submit">Create Calendar</button>
-    </form>
+    <button id="createCalendar">Create Calendar</button>
+    <div id="createCalendarWrapper" class="hide">
+        <button class="closeBtn"></button>
+        <form action="/createCalendar" method="POST">
+            <label for="calendarName">Name:</label><br>
+            <input type="text" id="calendarName" name="calendarName" placeholder="Calendar Name"><br>
+            <label for="calendarDays">Days/Headers for columns:<br><span class="subLabel">Separated by a comma and a space</span></label><br>
+            <input type="text" id="calendarDays" name="calendarDays" placeholder="Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday" value="Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday"><br>
+            <label for="calendarTimes">Times/Headers for rows:<br><span class="subLabel">Separated by a comma and a space</span></label><br>
+            <input type="text" id="calendarTimes" name="calendarTimes" placeholder="9, 10, 11, 12, 1, 2, 3, 4, 5" value="9, 10, 11, 12, 1, 2, 3, 4, 5"><br>
+            <button type="submit">Create</button>
+        </form>
+    </div>
   </body>
 </html>

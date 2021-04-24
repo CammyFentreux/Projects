@@ -24,4 +24,8 @@ window.addEventListener('load', function() {
             declineInvite(el.dataset.calendar)
         })
     }
-});
+
+    document.getElementById("createCalendar").addEventListener("click", function() {
+        document.getElementById("createCalendarWrapper").classList.remove("hide")
+    })
+})
