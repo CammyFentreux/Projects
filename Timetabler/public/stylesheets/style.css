@@ -33,6 +33,10 @@ a {
   min-height: 600px;
 }
 
+#heatmapControlPanel {
+
+}
+
 #tblTimetable th {
   background-color: #e5945a;
   width: 100px;
@@ -99,3 +103,4 @@ body.dark #tblTimetable .freetime {
 body.dark #tblTimetable .busy {
   background-color: #c82020;
 }
+

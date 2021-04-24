@@ -71,7 +71,7 @@ function generateTimeTableBody(table, days, timeRange) {
                 cell.id    = (day + increment).toLowerCase()
                 cell.classList.add('timetable-region')
                 cell.setAttribute('tabindex', '0')
-                queryAvailability(cell)
+                queryAllAvailabilities(cell)
             }
         }
     }
