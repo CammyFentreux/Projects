@@ -75,6 +75,39 @@ function getRGB(type) {
 	}
 }
 
+/**
+ * Generates the body of a timetable.
+ * <p>
+ * The left-most column contains row headers denoting the time for each row
+ *
+ * @param {HTMLTableElement} table      The `<table>` element to be built upon
+ * @param {string[]}         days       An array of strings representing each column header. The first element should be appropriate for a header of the row headers
+ * @param {string[]}         timeRange  An array of times with length corresponding to the number of rows
+ * @see generateTimeTable
+ */
+function generateTimeTableBody(table, days, timeRange) {
+	let tbody = document.createElement("tbody")
+
+	for (let increment of timeRange) {
+		let row = tbody.insertRow()
+
+		for (let day of days) {
+			if (day === "") {  // create row headers
+				const th = document.createElement("th")
+				th.appendChild(document.createTextNode(increment))
+				row.appendChild(th)
+			} else {           // create normal cells
+				const cell = row.insertCell()
+				cell.id    = (day + increment).toLowerCase()
+				cell.classList.add('timetable-region')
+				cell.setAttribute('tabindex', '0')
+				queryAllAvailabilities(cell)
+			}
+		}
+	}
+	table.appendChild(tbody)
+}
+
 // ---------- Events ----------
 // Sets up the page on load
 
