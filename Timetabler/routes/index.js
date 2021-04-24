@@ -125,9 +125,45 @@ router.post('/getAllAvailabilities', middlewareAuth, (req, res, next) => {
     if (err) {
       res.send("Error");
     } else if (results.length === 0) {
+      res.send("Empty");
+    } else {
+      res.send(results);
+    }
+  })
+})
+
+router.post('/getAvailabilities', middlewareAuth, (req, res) => {
+  if (req.body.datetime === undefined || req.body.calendar === undefined || req.body.subset === undefined) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  req.body.subset = req.body.subset.split(',')
+  console.log(`SELECT free FROM availability WHERE calendar=? AND datetime=? AND id IN (${req.body.subset.map((result) => result).join()})`)
+  connection.execute(`SELECT free FROM availability WHERE calendar=? AND datetime=? AND user IN (${req.body.subset.map(() => "?").join()})`, [...[req.body.calendar, req.body.datetime], ...req.body.subset], (err, results) => {
+    if (err) {
+      res.send("Error");
+    } else if (results.length === 0) {
+      res.send("Empty");
+    } else {
+      res.send(results);
+    }
+  })
+})
+
+router.post('/getCalendarAccess', middlewareAuth, (req, res, next) => {
+  if (req.body.calendar === undefined) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute('SELECT user FROM access WHERE calendar=?', [req.body.calendar],  (err, results) => {
+    if (err) {
+      res.send("Error")
+    } else if (results.length === 0) {
       res.send("Empty")
     } else {
-      res.send(results)
+      connection.execute(`SELECT id, username FROM user WHERE id IN (${results.map(() => "?").join()})`, results.map((result) => result.user), (err, results) => {
+        res.send(results)
+      })
+
+      // res.send(results);
     }
   })
 })
