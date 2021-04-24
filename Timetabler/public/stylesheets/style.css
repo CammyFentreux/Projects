@@ -45,7 +45,59 @@ input[type="submit"]:active {
   transform: scale(.95);
 }
 
+input[type="text"],
+input[type="password"] {
+    margin-bottom: 20px;
+    margin-top: 10px;
+    border-radius: 0;
+    border: none;
+    padding: 10px;
+    transition: width .6s;
+    width: 50%;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: 2px solid #9eb6fd;
+    width: 90%;
+}
+
 body.dark {
   background-color: #1c1c1c;
   color: #eee;
+}
+
+.closeBtn {
+    position: absolute;
+    top: 15px;
+    right: 14px;
+    margin: 0;
+    padding: 10px;
+    background-color: inherit;
+    color: white;
+    font-size: 21px;
+    box-shadow: none;
+}
+
+.closeBtn::before,
+.closeBtn::after {
+    content: "";
+    width: 2px;
+    height: 20px;
+    background-color: white;
+    display: block;
+    position: absolute;
+}
+
+.closeBtn::before {
+    transform: rotate(45deg) translate(-8px, -6px);
+}
+
+.closeBtn::after {
+    transform: rotate(-45deg) translate(6px, -8px);
+}
+
+.subLabel {
+    font-size: .8em;
+    color: #919191;
 }

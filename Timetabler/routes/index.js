@@ -19,7 +19,7 @@ function middlewareAuth(req, res, next) {
 //set up db
 connection.query('CREATE TABLE IF NOT EXISTS user( id varchar(255) PRIMARY KEY NOT NULL, username varchar(255) UNIQUE NOT NULL, password varchar(255) NOT NULL );', function(err, results, fields) {
   if (err == null) {
-    connection.query('CREATE TABLE IF NOT EXISTS calendar( id varchar(255) PRIMARY KEY NOT NULL, title varchar(255) NOT NULL );', function(err, results, fields) {
+    connection.query('CREATE TABLE IF NOT EXISTS calendar( id varchar(255) PRIMARY KEY NOT NULL, title varchar(255) NOT NULL, days varchar(255) DEFAULT "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday", times varchar(255) DEFAULT "9, 10, 11, 12, 1, 2, 3, 4, 5" );', function(err, results, fields) {
       if (err == null) {
         connection.query('CREATE TABLE IF NOT EXISTS availability( PRIMARY KEY (user, calendar, datetime), user varchar(255) NOT NULL, calendar varchar(255) NOT NULL, datetime varchar(255) NOT NULL, free bool NOT NULL, CONSTRAINT fk_user FOREIGN KEY (user) REFERENCES user(id), CONSTRAINT fk_calendar FOREIGN KEY (calendar) REFERENCES calendar(id));', function(err, results, fields) {
           if (err == null) {
@@ -52,12 +52,12 @@ router.get('/', middlewareAuth, (req, res, next) => {
   });
 });
 router.get('/user', middlewareAuth, (req, res, next) => {
-  connection.execute('SELECT access.access, calendar.title FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=? AND calendar.id=?', [req.session.userId, req.query.calendar], function(err, results, fields) {
+  connection.execute('SELECT access.access, calendar.title, calendar.days, calendar.times FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=? AND calendar.id=?', [req.session.userId, req.query.calendar], function(err, results, fields) {
     if (results[0] === null) {
       res.redirect("./");
     } else {
       if (err === null) {
-        res.render('UserClient', {access: results[0].access, calendarTitle: results[0].title});
+        res.render('UserClient', {access: results[0].access, calendarTitle: results[0].title, calendarDays: results[0].days, calendarTimes: results[0].times});
       } else {
         res.send(err);
       }
@@ -65,12 +65,12 @@ router.get('/user', middlewareAuth, (req, res, next) => {
   })
 });
 router.get('/admin', middlewareAuth, (req, res, next) => {
-  connection.execute('SELECT title FROM calendar WHERE id=?;', [req.query.calendar], function(err, results, fields) {
+  connection.execute('SELECT title, days, times FROM calendar WHERE id=?;', [req.query.calendar], function(err, results, fields) {
     if (results[0] === null) {
       res.redirect("./");
     } else {
       if (err === null) {
-        res.render('AdminClient', {calendar: req.query.calendar, calendarTitle: results[0].title});
+        res.render('AdminClient', {calendar: req.query.calendar, calendarTitle: results[0].title, calendarDays: results[0].days, calendarTimes: results[0].times});
       } else {
         res.send(err);
       }
@@ -140,7 +140,11 @@ router.post('/createCalendar', middlewareAuth, (req, res, next) => {
     let id = results[0]["uuid()"];
     console.log(JSON.stringify(results));
     if (err === null) {
-      connection.execute("INSERT INTO calendar VALUES (?, ?);", [id, req.body.calendarName], function(err, results, fields) {
+      var days = "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday";
+      if (req.body.calendarDays !== null && req.body.calendarDays !== "") days = req.body.calendarDays;
+      var times = "9, 10, 11, 12, 1, 2, 3, 4, 5";
+      if (req.body.calendarTimes !== null && req.body.calendarTimes !== "") times = req.body.calendarTimes;
+      connection.execute("INSERT INTO calendar VALUES (?, ?, ?, ?);", [id, req.body.calendarName, days, times], function(err, results, fields) {
         if (err === null) {
           connection.execute("INSERT INTO access VALUES (?, ?, 'admin');", [req.session.userId, id], function(err, results, fields) {
             res.redirect("./user?calendar=" + id);

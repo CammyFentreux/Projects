@@ -38,3 +38,12 @@ function toggleDarkMode() {
         body.classList.add('dark')
     }
 }
+
+window.addEventListener("load", function() {
+    var closeBtns = document.getElementsByClassName("closeBtn")
+    for (var btn of closeBtns) {
+        btn.addEventListener("click", function() {
+            this.parentElement.classList.add("hide")
+        })
+    }
+})

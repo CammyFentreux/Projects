@@ -21,8 +21,9 @@ window.addEventListener('load', function() {
  */
 function generateTimeTable() {
     const table = document.getElementById("tblTimetable"),
-          days = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-          timeRange = [9, 10, 11, 12, 1, 2, 3, 4, 5]
+          daysTimes = document.getElementById("daysTimesDiv").dataset,
+          days = (", " + daysTimes.days).split(", "),
+          timeRange = daysTimes.times.split(", ")
     generateTimeTableHead(table, days)
     generateTimeTableBody(table, days, timeRange)
 }
