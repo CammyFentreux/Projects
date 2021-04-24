@@ -11,4 +11,5 @@ table {
     background-color: inherit;
     box-shadow: 0 0 10px 6px black;
     padding: 40px;
+    max-width: 900px;
 }
