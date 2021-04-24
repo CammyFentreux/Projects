@@ -23,6 +23,8 @@
         <form action="/inviteUser" method="POST">
             <input type="text" name="calendar" class="hide" value="<%= calendar %>" readonly>
             <input type="text" name="username" placeholder="Username">
+            <input type="checkbox" id="inviteAsAdmin" name="inviteAsAdmin">
+            <label for="inviteAsAdmin">Admin</label>
             <button type="submit">Invite User</button>
         </form>
     </body>

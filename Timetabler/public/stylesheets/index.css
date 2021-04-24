@@ -2,6 +2,14 @@ table {
     margin: 0 auto;
 }
 
+td {
+    padding: 5px 10px;
+}
+
+td:first-of-type {
+    border-right: 1px solid white;
+}
+
 #createCalendarWrapper {
     position: absolute;
     top: 50%;

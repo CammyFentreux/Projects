@@ -201,8 +201,10 @@ router.post('/inviteUser', middlewareAuth, (req, res, next) => {
   }
   connection.execute("SELECT id FROM user WHERE username=?", [req.body.username], function(err, results, fields) {
     if (err === null && results[0] !== null) {
-      console.log(JSON.stringify(results[0]));
-      connection.execute("INSERT INTO access VALUES (?, ?, 'invited')", [results[0].id, req.body.calendar], function(err, results, fields) {
+      var access = "invited";
+      if (req.body.inviteAsAdmin === "on") access = "invitedAsAdmin";
+      console.log(req.body.inviteAsAdmin + ": " + access);
+      connection.execute("INSERT INTO access VALUES (?, ?, ?)", [results[0].id, req.body.calendar, access], function(err, results, fields) {
         if (err === null) {
           res.redirect("/user?calendar=" + req.body.calendar);
         } else {
@@ -219,11 +221,18 @@ router.post('/acceptInvite', middlewareAuth, (req, res, next) => {
   if (req.body.calendar === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
-  connection.execute("UPDATE access SET access='user' WHERE user=? AND calendar=?", [req.session.userId, req.body.calendar], function(err, results, fields) {
+  connection.execute("SELECT access FROM access WHERE user=? AND calendar=?", [req.session.userId, req.body.calendar], function(err, results, fields) {
     if (err === null) {
-      res.send("success");
-    } else {
-      res.send(err);
+      var access = "user";
+      if (results[0].access === "invitedAsAdmin") access = "admin";
+      console.log(access);
+      connection.execute("UPDATE access SET access=? WHERE user=? AND calendar=?", [access, req.session.userId, req.body.calendar], function(err, results, fields) {
+        if (err === null) {
+          res.send("success");
+        } else {
+          res.send(err);
+        }
+      });
     }
   });
 });

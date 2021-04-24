@@ -14,7 +14,7 @@
     <table>
         <% for (var i = 0; i < calendars.length; i++) { %>
             <tr>
-                <% if (calendars[i].access === "invited") { %>
+                <% if (calendars[i].access === "invited" || calendars[i].access === "invitedAsAdmin") { %>
                     <td><%= calendars[i].title %></td>
                     <td>Invited: 
                         <a href="javascript:void(0)" class="acceptInvite" data-calendar="<%= calendars[i].calendar %>">Accept</a>
