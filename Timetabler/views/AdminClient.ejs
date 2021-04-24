@@ -2,10 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <script src="base.js"></script>
-        <script src="timetable.js"></script>
-        <script src="AdminClient.js"></script>
-        <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+        <script src="javascripts/base.js"></script>
+        <script src="javascripts/timetable.js"></script>
+        <script src="javascripts/AdminClient.js"></script>
+        <link rel="stylesheet" type="text/css" href="stylesheets/base.css">
         <link rel="stylesheet" type="text/css" href="stylesheets/timetable.css">
         <title>Timetable Poller</title>
     </head>
@@ -23,6 +23,8 @@
         <form action="/inviteUser" method="POST">
             <input type="text" name="calendar" class="hide" value="<%= calendar %>" readonly>
             <input type="text" name="username" placeholder="Username">
+            <input type="checkbox" id="inviteAsAdmin" name="inviteAsAdmin">
+            <label for="inviteAsAdmin">Admin</label>
             <button type="submit">Invite User</button>
         </form>
     </body>

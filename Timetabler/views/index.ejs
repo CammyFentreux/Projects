@@ -2,9 +2,9 @@
 <html>
   <head>
     <title><%= title %></title>
-    <script src="./base.js"></script>
-    <script src="./index.js"></script>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="./javascripts/base.js"></script>
+    <script src="./javascripts/index.js"></script>
+    <link rel='stylesheet' href='/stylesheets/base.css' />
     <link rel='stylesheet' href='/stylesheets/index.css' />
   </head>
   <body class="dark">
@@ -14,7 +14,7 @@
     <table>
         <% for (var i = 0; i < calendars.length; i++) { %>
             <tr>
-                <% if (calendars[i].access === "invited") { %>
+                <% if (calendars[i].access === "invited" || calendars[i].access === "invitedAsAdmin") { %>
                     <td><%= calendars[i].title %></td>
                     <td>Invited: 
                         <a href="javascript:void(0)" class="acceptInvite" data-calendar="<%= calendars[i].calendar %>">Accept</a>
