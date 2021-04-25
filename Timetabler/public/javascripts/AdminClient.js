@@ -20,7 +20,7 @@ function queryAvailability(cell) {
 		if (xhttp.responseText !== "Error" && xhttp.responseText !== "Empty") {
 			cell.style.backgroundColor = calculateCellColour(JSON.parse(xhttp.responseText))
 		}
-	}, "calendar=" + calendar + "&datetime=" + cell.id + "&subset=" + visibleAvailabilityIDs)
+	}, "calendar=" + calendar + "&datetime=" + cell.id + "&subset=" + visibleAvailabilityUsernames)
 }
 
 function queryAccess() {
