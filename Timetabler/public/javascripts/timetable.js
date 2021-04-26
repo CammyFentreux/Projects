@@ -1,16 +1,17 @@
-window.addEventListener('load', function() {
-	generateTimeTable()
-	// Set click events to UI elements
+
+function setupView() {
+    generateTimeTable()
+    // Set click events to UI elements
     document.getElementById('homeBtn').addEventListener('click', function() {
         window.location.href = "./"
     })
-	document.getElementById("lightDarkSwitch").addEventListener("click", toggleDarkMode)
-	document.getElementById("logoutBtn").addEventListener("click", function() {
-		xhttpRequest('logout', function(xhttp) {
-			window.location.href = "./login"
-		})
-	})
-})
+    document.getElementById("lightDarkSwitch").addEventListener("click", toggleDarkMode)
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+        xhttpRequest('logout', function(xhttp) {
+            window.location.href = "./login"
+        })
+    })
+}
 
 /**
  * Generates a timetable of variable time frame

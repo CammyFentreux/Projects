@@ -129,8 +129,9 @@ function onCheckboxClick({target}) {
 }
 
 window.addEventListener('load', () => {
+	queryAccess()
 	document.getElementById("userBtn").addEventListener("click", function() {
         window.location.href="./user?calendar=" + calendar
     })
-	queryAccess()
+	setupView()
 })

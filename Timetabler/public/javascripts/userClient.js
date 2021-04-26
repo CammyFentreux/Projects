@@ -86,6 +86,7 @@ window.addEventListener('load', () => {
             window.location.href="./admin?calendar=" + calendar
         })
     }
+  setupView()
 })
 
 // Checks for when the mouse clicked to begin the drag selection of cells
