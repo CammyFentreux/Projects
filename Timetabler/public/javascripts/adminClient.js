@@ -31,19 +31,26 @@ function queryAccess() {
 function populateUserList(users) {
 	const heatmapControl = document.getElementById('controlPanelUsers')
 	for (const {username, id} of users) {
-		const input     = document.createElement('input')
-		const label     = document.createElement('label')
-		const div       = document.createElement('div')
-		label.innerText = username
-		input.name      = username
-		input.id_       = id
-		input.checked   = true
-		input.onclick   = onCheckboxClick
+		const input      = document.createElement('input')
+		const label      = document.createElement('label')
+		const button     = document.createElement('button')
+		const div        = document.createElement('div')
+		button.innerText = "X"
+		button.type      = "button"
+		button.onclick   = revokeAccess
+		button.name      = username
+		label.innerText  = username
+		div.id           = username
+		input.name       = username
+		input.checked    = true
+		input.onclick    = onCheckboxClick
 
 		input.setAttribute('type', 'checkbox')
+		button.classList.add("revokeAccessBtn")
 		div.classList.add('userEntryHeatmap')
 		visibleAvailabilityUsernames.push(username)
 
+		div.appendChild(button)
 		label.appendChild(input)
 		div.appendChild(label)
 		heatmapControl.appendChild(div)
@@ -74,6 +81,18 @@ function getRGB(type) {
 	} else {  // TODO: currently doesn't work since this is all only called on load
 		return [[190, 190, 190], type === "freetime"? [-84, -3, -93] : [32, -156, -156]]
 	}
+}
+
+function revokeAccess({target}) {
+	xhttpRequest('/revokeAccess', (xhttp) => {
+		if (xhttp.responseText === "Error") {
+			console.log("Error revoking access from " + target.name)
+		} else {
+			document.getElementById(target.name).remove()
+			console.log("Revoked access from " + target.name)
+
+		}
+	}, "calendar=" + calendar + "&username=" + target.name)
 }
 
 /**

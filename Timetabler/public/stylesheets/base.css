@@ -112,6 +112,14 @@ body.dark {
     margin: 15px 0 0;
 }
 
+.accordion::after {
+  content: " \25BE";
+}
+
+.accordion.active::after {
+  content: " \25B4";
+}
+
 .accordion + div {
     transition: max-height 1s;
     max-height: 0;

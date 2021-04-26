@@ -30,8 +30,18 @@
 .userEntryHeatmap {
     flex: 0 0;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin-right: 5px;
+}
+
+.revokeAccessBtn {
+    padding: 0;
+    margin: 0;
+    width: min-content;
+    height: min-content;
+
+    background-color: #373737;
+    color: #c82020;
 }
 
 .userEntryHeatmap:first-of-type {
