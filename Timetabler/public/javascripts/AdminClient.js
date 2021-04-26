@@ -1,6 +1,5 @@
 const calendar = getParameterByName("calendar")
 const visibleAvailabilityUsernames = []
-const visibleAvailabilityIDs = []
 
 /**
  * Queries the freeness/busyness of a single cell
@@ -42,7 +41,6 @@ function populateUserList(users) {
 
 		input.setAttribute('type', 'checkbox')
 		visibleAvailabilityUsernames.push(username)
-		visibleAvailabilityIDs.push(id)
 
 		heatmapControl.appendChild(input)
 		heatmapControl.appendChild(label)
@@ -114,12 +112,10 @@ function generateTimeTableBody(table, days, timeRange) {
 function onCheckboxClick({target}) {
 	if (target.checked) {
 		visibleAvailabilityUsernames.push(target.name)
-		visibleAvailabilityIDs.push(target.id_)
 	} else {
 		let index = visibleAvailabilityUsernames.indexOf(target.name)
 		if (index > -1) {
 			visibleAvailabilityUsernames.splice(index,1)
-			visibleAvailabilityIDs.splice(index,1)
 		}
 	}
 
