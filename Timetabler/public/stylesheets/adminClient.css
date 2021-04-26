@@ -8,6 +8,23 @@
     overflow: auto;
     background-color: #373737;
     min-width: 100px;
+    transition: width .6s, min-width .6s;
+}
+
+#heatmapControlPanel.hidden {
+    width: 0;
+    min-width: 0;
+}
+
+#showControlPanel {
+    padding: 0;
+    background-color: inherit;
+    color: white;
+    font-size: 25px;
+    margin: 0;
+    position: absolute;
+    transform: translate(-9px, -14px);
+    box-shadow: none;
 }
 
 .userEntryHeatmap {

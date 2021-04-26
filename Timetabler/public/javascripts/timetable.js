@@ -42,7 +42,24 @@ function generateTimeTableHead(table, days) {
 
     for (let day of days) {  // for every day, create a table header and add a text node with the name of the day
         let th = document.createElement("th")
-        th.appendChild(document.createTextNode(day))
+        if (day === "") {
+            var cpBtn = document.createElement("button")
+            cpBtn.id = "showControlPanel"
+            cpBtn.innerHTML = "&#9776;"
+            cpBtn.addEventListener("click", function() {
+                var cp = document.getElementById("heatmapControlPanel")
+                if (cp.classList.contains("hidden")) {
+                    this.innerHTML = "&#10799;"
+                    cp.classList.remove("hidden")
+                } else {
+                    this.innerHTML = "&#9776;"
+                    cp.classList.add("hidden")
+                }
+            })
+            th.appendChild(cpBtn)
+        } else {
+            th.appendChild(document.createTextNode(day))
+        }
         row.appendChild(th)
     }
 }

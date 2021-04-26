@@ -14,7 +14,7 @@
         <h1><%= calendarTitle %></h1>
         <div class="hide" id="daysTimesDiv" data-days="<%= calendarDays %>" data-times="<%= calendarTimes %>"></div>
         <div id="main">
-            <div id="heatmapControlPanel">
+            <div id="heatmapControlPanel" class="hidden">
                 <button class="accordion">Invite User</button>
                 <div>
                     <form action="/inviteUser" method="POST">
