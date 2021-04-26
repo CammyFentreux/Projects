@@ -107,3 +107,17 @@ body.dark {
     color: #919191;
 }
 
+.accordion {
+    width: 100%;
+    margin: 15px 0 0;
+}
+
+.accordion + div {
+    transition: max-height 1s;
+    max-height: 0;
+    overflow-y: hidden;
+}
+
+.accordion.active + div {
+    max-height: 100%;
+}

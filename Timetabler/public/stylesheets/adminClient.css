@@ -6,14 +6,25 @@
 #heatmapControlPanel {
     width: 10%;
     overflow: auto;
-
     background-color: #373737;
-    border: #262626 solid 3px;
-    border-top: #262626 solid 25px;
+    min-width: 100px;
+    transition: width .6s, min-width .6s;
+}
 
-    flex: 0 0 fit-content;
-    display: flex;
-    flex-direction: column;
+#heatmapControlPanel.hidden {
+    width: 0;
+    min-width: 0;
+}
+
+#showControlPanel {
+    padding: 0;
+    background-color: inherit;
+    color: white;
+    font-size: 25px;
+    margin: 0;
+    position: absolute;
+    transform: translate(-9px, -14px);
+    box-shadow: none;
 }
 
 .userEntryHeatmap {
