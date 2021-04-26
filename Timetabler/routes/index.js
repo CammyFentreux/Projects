@@ -247,7 +247,7 @@ router.post('/declineInvite', middlewareAuth, (req, res, next) => {
 
 router.post('/register', (req, res, next) => {
   bcrypt.hash(req.body.password, 10, function(err, hash) {
-    connection.execute("INSERT INTO user VALUES (uuid(), ?, ?);", [req.body.username, hash], function(err, results, fields) {
+    connection.execute("INSERT INTO user VALUES (?, ?);", [req.body.username, hash], function(err, results, fields) {
       if (err == null) {
         req.session.username = req.body.username;
         res.redirect("/");
