@@ -15,14 +15,20 @@
         <div class="hide" id="daysTimesDiv" data-days="<%= calendarDays %>" data-times="<%= calendarTimes %>"></div>
         <div id="main">
             <div id="heatmapControlPanel">
-                <form action="/inviteUser" method="POST">
-                    <input type="text" name="calendar" class="hide" value="<%= calendar %>" readonly>
-                    <input type="text" name="username" placeholder="Username" class="largerWidth">
-                    <br>
-                    <input type="checkbox" id="inviteAsAdmin" name="inviteAsAdmin">
-                    <label for="inviteAsAdmin">Admin</label>
-                    <button type="submit">Invite User</button>
-                </form>
+                <button class="accordion">Invite User</button>
+                <div>
+                    <form action="/inviteUser" method="POST">
+                        <input type="text" name="calendar" class="hide" value="<%= calendar %>" readonly>
+                        <input type="text" name="username" placeholder="Username" class="largerWidth">
+                        <br>
+                        <input type="checkbox" id="inviteAsAdmin" name="inviteAsAdmin">
+                        <label for="inviteAsAdmin">Admin</label>
+                        <button type="submit">Invite</button>
+                    </form>
+                </div>
+                <button class="accordion">Users</button>
+                <div id="controlPanelUsers">
+                </div>
             </div>
             <table id="tblTimetable"></table>
         </div>

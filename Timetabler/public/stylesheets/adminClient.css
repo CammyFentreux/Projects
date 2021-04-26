@@ -6,14 +6,8 @@
 #heatmapControlPanel {
     width: 10%;
     overflow: auto;
-
     background-color: #373737;
-    border: #262626 solid 3px;
-    border-top: #262626 solid 25px;
-
-    flex: 0 0 fit-content;
-    display: flex;
-    flex-direction: column;
+    min-width: 100px;
 }
 
 .userEntryHeatmap {

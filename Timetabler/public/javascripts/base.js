@@ -46,4 +46,14 @@ window.addEventListener("load", function() {
             this.parentElement.classList.add("hide")
         })
     }
+    var accordions = document.getElementsByClassName("accordion")
+    for (var btn of accordions) {
+        btn.addEventListener("click", function() {
+            if (this.classList.contains("active")) {
+                this.classList.remove("active");
+            } else {
+                this.classList.add("active");
+            }
+        })
+    }
 })

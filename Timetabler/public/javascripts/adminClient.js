@@ -29,7 +29,7 @@ function queryAccess() {
 }
 
 function populateUserList(users) {
-	const heatmapControl = document.getElementById('heatmapControlPanel')
+	const heatmapControl = document.getElementById('controlPanelUsers')
 	for (const {username, id} of users) {
 		const input     = document.createElement('input')
 		const label     = document.createElement('label')
