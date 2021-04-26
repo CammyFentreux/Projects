@@ -16,6 +16,15 @@ function middlewareAuth(req, res, next) {
   }
 }
 
+function hasAccessToCalendar(req, res, next) {
+  if (req.body.calendar) {
+    connection.execute("SELECT access FROM access WHERE user=? AND calendar=?;", [req.session.username, req.body.calendar], function(err, results, fields) {
+      if (!err && results[0]) next();
+      else res.redirect("/login");
+    });
+  }
+}
+
 //set up db
 connection.query('CREATE TABLE IF NOT EXISTS user( username varchar(255) PRIMARY KEY NOT NULL, password varchar(255) NOT NULL );', function(err, results, fields) {
   if (err == null) {
@@ -53,7 +62,7 @@ router.get('/', middlewareAuth, (req, res, next) => {
 });
 router.get('/user', middlewareAuth, (req, res, next) => {
   connection.execute('SELECT access.access, calendar.title, calendar.days, calendar.times FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=? AND calendar.id=?', [req.session.username, req.query.calendar], function(err, results, fields) {
-    if (results[0] === null) {
+    if (results[0] === null || !results[0].access) {
       res.redirect("./");
     } else {
       if (err === null) {
@@ -65,8 +74,9 @@ router.get('/user', middlewareAuth, (req, res, next) => {
   })
 });
 router.get('/admin', middlewareAuth, (req, res, next) => {
-  connection.execute('SELECT title, days, times FROM calendar WHERE id=?;', [req.query.calendar], function(err, results, fields) {
-    if (results[0] === null) {
+  connection.execute('SELECT access.access, calendar.title, calendar.days, calendar.times FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=? AND calendar.id=?;', [req.session.username, req.query.calendar], function(err, results, fields) {
+    console.log(err);
+    if (!results || results[0] === null || results[0].access !== "admin") {
       res.redirect("./");
     } else {
       if (err === null) {
@@ -90,7 +100,7 @@ router.post('/clearUserAvailability', middlewareAuth, (req, res, next) => {
   });
 });
 
-router.post('/saveUserAvailability', middlewareAuth, (req, res, next) => {
+router.post('/saveUserAvailability', middlewareAuth, hasAccessToCalendar, (req, res, next) => {
   if ([req.body.calendar, req.body.datetime, req.body.free].includes(undefined)) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
@@ -100,8 +110,8 @@ router.post('/saveUserAvailability', middlewareAuth, (req, res, next) => {
   });
 });
 
-router.post('/getUserAvailability', middlewareAuth, (req, res, next) => {
-  if (req.body.datetime === undefined) {
+router.post('/getUserAvailability', middlewareAuth, hasAccessToCalendar, (req, res, next) => {
+  if (req.body.calendar === undefined || req.body.datetime === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
   connection.execute("SELECT free FROM availability WHERE user=? AND calendar=? AND datetime=?;", [req.session.username, req.body.calendar, req.body.datetime], function(err, results, fields) {
@@ -117,7 +127,7 @@ router.post('/getUserAvailability', middlewareAuth, (req, res, next) => {
   });
 });
 
-router.post('/getAllAvailabilities', middlewareAuth, (req, res, next) => {
+router.post('/getAllAvailabilities', middlewareAuth, hasAccessToCalendar, (req, res, next) => {
   if (req.body.datetime === undefined || req.body.calendar === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
@@ -132,7 +142,7 @@ router.post('/getAllAvailabilities', middlewareAuth, (req, res, next) => {
   })
 })
 
-router.post('/getAvailabilities', middlewareAuth, (req, res) => {
+router.post('/getAvailabilities', middlewareAuth, hasAccessToCalendar, (req, res) => {
   if (req.body.datetime === undefined || req.body.calendar === undefined || req.body.subset === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
@@ -150,7 +160,7 @@ router.post('/getAvailabilities', middlewareAuth, (req, res) => {
   })
 })
 
-router.post('/getCalendarAccess', middlewareAuth, (req, res, next) => {
+router.post('/getCalendarAccess', middlewareAuth, hasAccessToCalendar, (req, res, next) => {
   if (req.body.calendar === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
@@ -196,7 +206,7 @@ router.post('/createCalendar', middlewareAuth, (req, res, next) => {
   });
 });
 
-router.post('/inviteUser', middlewareAuth, (req, res, next) => {
+router.post('/inviteUser', middlewareAuth, hasAccessToCalendar, (req, res, next) => {
   if (req.body.username === undefined || req.body.calendar === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
