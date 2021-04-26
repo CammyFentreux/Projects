@@ -42,7 +42,7 @@ function generateTimeTableHead(table, days) {
 
     for (let day of days) {  // for every day, create a table header and add a text node with the name of the day
         let th = document.createElement("th")
-        if (day === "") {
+        if (day === "" && window.location.pathname.includes("/admin")) {
             var cpBtn = document.createElement("button")
             cpBtn.id = "showControlPanel"
             cpBtn.innerHTML = "&#9776;"
