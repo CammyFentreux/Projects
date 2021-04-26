@@ -173,8 +173,6 @@ router.post('/getCalendarAccess', middlewareAuth, hasAccessToCalendar, (req, res
       connection.execute(`SELECT username FROM user WHERE username IN (${results.map(() => "?").join()})`, results.map((result) => result.user), (err, results) => {
         res.send(results)
       })
-
-      // res.send(results);
     }
   })
 })
@@ -221,6 +219,25 @@ router.post('/inviteUser', middlewareAuth, hasAccessToCalendar, (req, res, next)
     }
   });
 });
+
+router.post('/revokeAccess', middlewareAuth, (req, res) => {
+  if (req.body.calendar === undefined || req.body.username === undefined) {
+    return res.status(400).send({ message: 'Invalid request', request: req.body });
+  }
+  connection.execute("DELETE FROM access WHERE calendar=? AND user=?", [req.body.calendar, req.body.username], (err, results) => {
+    if (err === null) {
+      connection.execute("DELETE FROM availability WHERE calendar=? AND user=?", [req.body.calendar, req.body.username], (err) => {
+        if (err === null) {
+          res.send("Success")
+        } else {
+          res.send("Error")
+        }
+      })
+    } else {
+      res.send("Error")
+    }
+  })
+})
 
 router.post('/acceptInvite', middlewareAuth, (req, res, next) => {
   if (req.body.calendar === undefined) {
