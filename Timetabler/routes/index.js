@@ -26,7 +26,7 @@ function hasAccessToCalendar(req, res, next) {
 }
 
 //set up db
-connection.query('CREATE TABLE IF NOT EXISTS user( username varchar(255) PRIMARY KEY NOT NULL, password varchar(255) NOT NULL );', function(err, results, fields) {
+connection.query('CREATE TABLE IF NOT EXISTS user( username varchar(255) PRIMARY KEY NOT NULL, password varchar(255) NOT NULL, email varchar(255) NOT NULL );', function(err, results, fields) {
   if (err == null) {
     connection.query('CREATE TABLE IF NOT EXISTS calendar( id varchar(255) PRIMARY KEY NOT NULL, title varchar(255) NOT NULL, days varchar(255) DEFAULT "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday", times varchar(255) DEFAULT "9, 10, 11, 12, 1, 2, 3, 4, 5" );', function(err, results, fields) {
       if (err == null) {
@@ -274,7 +274,7 @@ router.post('/declineInvite', middlewareAuth, (req, res, next) => {
 
 router.post('/register', (req, res, next) => {
   bcrypt.hash(req.body.password, 10, function(err, hash) {
-    connection.execute("INSERT INTO user VALUES (?, ?);", [req.body.username, hash], function(err, results, fields) {
+    connection.execute("INSERT INTO user VALUES (?, ?, ?);", [req.body.username, hash, req.body.email], function(err, results, fields) {
       if (err == null) {
         req.session.username = req.body.username;
         res.redirect("/");
