@@ -7,25 +7,27 @@
         <script src="javascripts/AdminClient.js"></script>
         <link rel="stylesheet" type="text/css" href="stylesheets/base.css">
         <link rel="stylesheet" type="text/css" href="stylesheets/timetable.css">
+        <link rel="stylesheet" type="text/css" href="stylesheets/adminClient.css">
         <title>Timetable Poller</title>
     </head>
     <body class="dark">
         <h1><%= calendarTitle %></h1>
         <div class="hide" id="daysTimesDiv" data-days="<%= calendarDays %>" data-times="<%= calendarTimes %>"></div>
-        <div>
-            <div id="heatmapControlPanel"></div>
+        <div id="main">
+            <div id="heatmapControlPanel">
+                <form action="/inviteUser" method="POST">
+                    <input type="text" name="calendar" class="hide" value="<%= calendar %>" readonly>
+                    <input type="text" name="username" placeholder="Username">
+                    <input type="checkbox" id="inviteAsAdmin" name="inviteAsAdmin">
+                    <label for="inviteAsAdmin">Admin</label>
+                    <button type="submit">Invite User</button>
+                </form>
+            </div>
             <table id="tblTimetable"></table>
         </div>
         <button id="homeBtn">Home</button>
         <button id="userBtn">Enter My Availability</button>
         <button id="lightDarkSwitch">Light Mode</button>
         <button id="logoutBtn">Log Out</button>
-        <form action="/inviteUser" method="POST">
-            <input type="text" name="calendar" class="hide" value="<%= calendar %>" readonly>
-            <input type="text" name="username" placeholder="Username">
-            <input type="checkbox" id="inviteAsAdmin" name="inviteAsAdmin">
-            <label for="inviteAsAdmin">Admin</label>
-            <button type="submit">Invite User</button>
-        </form>
     </body>
 </html>

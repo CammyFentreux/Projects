@@ -1,0 +1,28 @@
+
+#main {
+    display: flex;
+}
+
+#heatmapControlPanel {
+    width: 10%;
+    overflow: auto;
+
+    background-color: #373737;
+    border: #262626 solid 3px;
+    border-top: #262626 solid 25px;
+
+    flex: 0 0 fit-content;
+    display: flex;
+    flex-direction: column;
+}
+
+.userEntryHeatmap {
+    flex: 0 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#tblTimetable {
+    flex: 1 0 content;
+    width: 90%;
+}
