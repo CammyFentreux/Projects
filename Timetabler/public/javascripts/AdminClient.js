@@ -33,6 +33,7 @@ function populateUserList(users) {
 	for (const {username, id} of users) {
 		const input     = document.createElement('input')
 		const label     = document.createElement('label')
+		const div       = document.createElement('div')
 		label.innerText = username
 		input.name      = username
 		input.id_       = id
@@ -40,10 +41,12 @@ function populateUserList(users) {
 		input.onclick   = onCheckboxClick
 
 		input.setAttribute('type', 'checkbox')
+		div.classList.add('userEntryHeatmap')
 		visibleAvailabilityUsernames.push(username)
 
-		heatmapControl.appendChild(input)
-		heatmapControl.appendChild(label)
+		label.appendChild(input)
+		div.appendChild(label)
+		heatmapControl.appendChild(div)
 	}
 }
 
