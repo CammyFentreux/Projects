@@ -20,6 +20,11 @@
     flex: 0 0;
     display: flex;
     justify-content: flex-end;
+    margin-right: 5px;
+}
+
+.userEntryHeatmap:first-of-type {
+    margin-top: 20px
 }
 
 #tblTimetable {

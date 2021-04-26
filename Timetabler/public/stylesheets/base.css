@@ -56,6 +56,11 @@ input[type="password"] {
     width: 50%;
 }
 
+input[type="text"].largerWidth,
+input[type="password"].largerWidth {
+    width: 75%;
+}
+
 input[type="text"]:focus,
 input[type="password"]:focus {
     outline: 2px solid #9eb6fd;
