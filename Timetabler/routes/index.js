@@ -4,6 +4,16 @@ const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
 const loginDetails = require('../loginDetails.json');
 const connection = mysql.createConnection(loginDetails);
+const nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport(require('../emailDetails.json'));
+const Crypto = require('crypto')
+
+function randomString(size = 21) {
+  return Crypto
+    .randomBytes(size)
+    .toString('base64')
+    .slice(0, size)
+}
 
 function middlewareAuth(req, res, next) {
   if (req.session && req.session.username) {
@@ -26,7 +36,7 @@ function hasAccessToCalendar(req, res, next) {
 }
 
 //set up db
-connection.query('CREATE TABLE IF NOT EXISTS user( username varchar(255) PRIMARY KEY NOT NULL, password varchar(255) NOT NULL );', function(err, results, fields) {
+connection.query('CREATE TABLE IF NOT EXISTS user( username varchar(255) PRIMARY KEY NOT NULL, password varchar(255) NOT NULL, email varchar(255) NOT NULL, verified bool DEFAULT "0" NOT NULL, emailHash varchar(255) );', function(err, results, fields) {
   if (err == null) {
     connection.query('CREATE TABLE IF NOT EXISTS calendar( id varchar(255) PRIMARY KEY NOT NULL, title varchar(255) NOT NULL, days varchar(255) DEFAULT "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday", times varchar(255) DEFAULT "9, 10, 11, 12, 1, 2, 3, 4, 5" );', function(err, results, fields) {
       if (err == null) {
@@ -55,11 +65,17 @@ connection.query('CREATE TABLE IF NOT EXISTS user( username varchar(255) PRIMARY
 
 /* GET methods */
 router.get('/', middlewareAuth, (req, res, next) => {
-  connection.execute('SELECT access.calendar, access.access, calendar.title FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=?;', [req.session.username], (err, results, fields) => {
-    console.log(JSON.stringify(results));
-    res.render('index', { title: 'Timetabler', calendars: results });
-  });
+  renderIndex(req, res);
 });
+
+function renderIndex(req, res, verified) {
+  connection.execute('SELECT access.calendar, access.access, calendar.title FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=?;', [req.session.username], (err, results, fields) => {
+    var options = { title: 'Timetabler', calendars: results };
+    if (typeof verified !== 'undefined') options.verified = verified;
+    res.render('index', options);
+  });
+}
+
 router.get('/user', middlewareAuth, (req, res, next) => {
   connection.execute('SELECT access.access, calendar.title, calendar.days, calendar.times FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=? AND calendar.id=?', [req.session.username, req.query.calendar], function(err, results, fields) {
     if (results[0] === null || !results[0].access) {
@@ -274,14 +290,65 @@ router.post('/declineInvite', middlewareAuth, (req, res, next) => {
 
 router.post('/register', (req, res, next) => {
   bcrypt.hash(req.body.password, 10, function(err, hash) {
-    connection.execute("INSERT INTO user VALUES (?, ?);", [req.body.username, hash], function(err, results, fields) {
-      if (err == null) {
+    var emailHash = randomString();
+    connection.execute("INSERT INTO user (username, password, email, emailHash) VALUES (?, ?, ?, ?);", [req.body.username, hash, req.body.email, emailHash], function(err, results, fields) {
+      if (err === null) {
         req.session.username = req.body.username;
+        sendVerificationEmail(res, req.body, emailHash);
         res.redirect("/");
       } else {
         res.send(err);
       }
     });
+  });
+});
+
+function sendVerificationEmail(res, body, emailHash) {
+  transporter.sendMail({
+    from: "admin@timetabler.joeherbert.dev",
+    to: body.email,
+    subject: "Welcome to Timetabler!",
+    html: "<h1>Welcome to Timetabler!</h1><h3>Please verify your email, " + body.username + "</h3><p>Thanks for signing up! Please confirm your email address and get started by clicking the button below</p><a href='https://timetabler.joeherbert.dev/verifyEmail?user=" + encodeURIComponent(body.username) + "&emailHash=" + encodeURIComponent(emailHash) + "'>Verify Now</a></body>"
+  }, function(err, info) {
+    if (err) {
+      res.send(err);
+    } else {
+      res.send("success");
+    }
+  });
+}
+
+router.get('/verifyEmail', (req, res, next) => {
+  connection.execute("UPDATE user SET verified='1' WHERE username=? AND emailHash=?;", [decodeURIComponent(req.query.user), decodeURIComponent(req.query.emailHash)], function(err, results, fields) {
+    if (err === null) {
+      if (results.changedRows === 0) {
+        renderIndex(req, res, false);
+      } else {
+        renderIndex(req, res, true);
+      }
+    } else {
+      res.send(err);
+    }
+  });
+});
+
+router.post('/sendVerificationEmail', (req, res, next) => {
+  var emailHash = randomString();
+  connection.execute("UPDATE user SET emailHash=? WHERE username=?;", [emailHash, req.session.username], function(err, results, fields) {
+    if (err === null) {
+      connection.execute("SELECT email FROM user WHERE username=?;", [req.session.username], function(err, results, fields) {
+        if (err === null && results[0]) {
+          sendVerificationEmail(res, {
+            email: results[0].email,
+            username: req.session.username
+          }, emailHash);
+        } else {
+          res.send(err);
+        }
+      });
+    } else {
+      res.send(err);
+    }
   });
 });
 

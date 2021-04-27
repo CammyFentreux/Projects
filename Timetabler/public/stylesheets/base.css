@@ -46,6 +46,7 @@ input[type="submit"]:active {
 }
 
 input[type="text"],
+input[type="email"],
 input[type="password"] {
     margin-bottom: 20px;
     margin-top: 10px;
@@ -57,11 +58,13 @@ input[type="password"] {
 }
 
 input[type="text"].largerWidth,
+input[type="email"].largerWidth,
 input[type="password"].largerWidth {
     width: 75%;
 }
 
 input[type="text"]:focus,
+input[type="email"]:focus,
 input[type="password"]:focus {
     outline: 2px solid #9eb6fd;
     width: 90%;
@@ -128,4 +131,20 @@ body.dark {
 
 .accordion.active + div {
     max-height: 100%;
+}
+
+.infoMessage {
+  position: relative;
+  width: 50%;
+  padding: 15px;
+  margin: 0 auto;
+  min-width: 250px;
+}
+
+.infoMessage.success {
+  background-color: #378837;
+}
+
+.infoMessage.error {
+  background-color: #751818;
 }
