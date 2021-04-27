@@ -35,7 +35,7 @@
                     <% } else { %>
                         <td><a href="./user?calendar=<%= calendars[i].calendar %>"><%= calendars[i].title %></a></td>
                     <% } %>
-                    <td><%= calendars[i].access %></td>
+                    <td><%= calendars[i].access.charAt(0).toUpperCase() + calendars[i].access.slice(1); %></td>
                 <% } %>
             </tr>
         <% } %>
