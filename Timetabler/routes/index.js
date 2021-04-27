@@ -308,12 +308,10 @@ function sendVerificationEmail(res, body, emailHash) {
     from: "admin@timetabler.joeherbert.dev",
     to: body.email,
     subject: "Welcome to Timetabler!",
-    html: "<h1>Welcome to Timetabler!</h1><h3>Please verify your email, " + body.username + "</h3><p>Thanks for signing up! Please confirm your email address and get started by clicking the button below</p><a href='https://timetabler.joeherbert.dev/verifyEmail?user=" + encodeURIComponent(body.username) + "&emailHash=" + encodeURIComponent(emailHash) + "'>Verify Now</a></body>"
+    html: "<h1>Welcome to Timetabler!</h1><h3>Please verify your email, " + body.username + "</h3><p>Thanks for signing up! Please confirm your email address and get started by clicking the button below</p><a href='https://timetabler.joeherbert.dev/verifyEmail?user=" + encodeURIComponent(body.username).replace(/\'/g, "&#39;") + "&emailHash=" + encodeURIComponent(emailHash).replace(/\'/g, "&#39;") + "'>Verify Now</a></body>"
   }, function(err, info) {
     if (err) {
       res.send(err);
-    } else {
-      res.send("success");
     }
   });
 }
@@ -342,6 +340,7 @@ router.post('/sendVerificationEmail', (req, res, next) => {
             email: results[0].email,
             username: req.session.username
           }, emailHash);
+          res.send("success");
         } else {
           res.send(err);
         }
