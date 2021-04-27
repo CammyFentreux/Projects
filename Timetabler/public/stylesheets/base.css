@@ -132,3 +132,19 @@ body.dark {
 .accordion.active + div {
     max-height: 100%;
 }
+
+.infoMessage {
+  position: relative;
+  width: 50%;
+  padding: 15px;
+  margin: 0 auto;
+  min-width: 250px;
+}
+
+.infoMessage.success {
+  background-color: #378837;
+}
+
+.infoMessage.error {
+  background-color: #751818;
+}

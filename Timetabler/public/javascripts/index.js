@@ -28,4 +28,17 @@ window.addEventListener('load', function() {
     document.getElementById("createCalendar").addEventListener("click", function() {
         document.getElementById("createCalendarWrapper").classList.remove("hide")
     })
+
+    var verifyEmailLink = document.getElementById("verifyEmailLink");
+    if (verifyEmailLink) {
+        verifyEmailLink.addEventListener("click", function() {
+            xhttpRequest('/sendVerificationEmail', function(xhttp) {
+                if (xhttp.responseText === "success") {
+                    new Toast({message: "Successfully sent verification email", type: "success"})
+                } else {
+                    new Toast({message: "Error: " + xhttp.responseText, type: "danger"})
+                }
+            })
+        })
+    }
 })

@@ -2,6 +2,8 @@
 <html>
   <head>
     <title><%= title %></title>
+    <script src="./libs/Toast.min.js"></script>
+    <link rel='stylesheet' href='/libs/Toast.min.css' />
     <script src="./javascripts/base.js"></script>
     <script src="./javascripts/index.js"></script>
     <link rel='stylesheet' href='/stylesheets/base.css' />
@@ -10,6 +12,13 @@
   <body class="dark">
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <% if (typeof verified !== 'undefined') { %>
+        <% if (verified) { %>
+            <div class="infoMessage success"><button class="closeBtn"></button><span>Your email is verified!</span></div>
+        <% } else { %>
+            <div class="infoMessage error"><button class="closeBtn"></button><span>Your email wasn't verified. Please <a href="#" id="verifyEmailLink">try again</a>.</span></div>
+        <% } %>
+    <% } %>
     <h2>Your Calendars:</h2>
     <table>
         <% for (var i = 0; i < calendars.length; i++) { %>
