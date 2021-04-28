@@ -56,4 +56,12 @@ window.addEventListener("load", function() {
             }
         })
     }
+    var copyBtns = document.getElementsByClassName("copy")
+    for (var btn of copyBtns) {
+        btn.addEventListener("click", function() {
+            this.select();
+            this.setSelectionRange(0, 99999); /* For mobile devices */
+            document.execCommand("copy");
+        })
+    }
 })

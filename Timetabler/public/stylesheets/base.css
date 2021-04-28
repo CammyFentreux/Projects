@@ -148,3 +148,7 @@ body.dark {
 .infoMessage.error {
   background-color: #751818;
 }
+
+.copy {
+  cursor: pointer;
+}

@@ -44,7 +44,13 @@ connection.query('CREATE TABLE IF NOT EXISTS user( username varchar(255) PRIMARY
           if (err == null) {
             connection.query('CREATE TABLE IF NOT EXISTS access( PRIMARY KEY (user, calendar), user varchar(255) NOT NULL, calendar varchar(255) NOT NULL, access varchar(255) NOT NULL, CONSTRAINT fk_user_access FOREIGN KEY (user) REFERENCES user(username), CONSTRAINT fk_calendar_access FOREIGN KEY (calendar) REFERENCES calendar(id));', function(err, results, fields) {
               if (err == null) {
-                console.log("DB set up");
+                connection.query('CREATE TABLE IF NOT EXISTS inviteLinks( calendar varchar(255) PRIMARY KEY, inviteHash varchar(255) NOT NULL, inviteEndDate datetime NOT NULL, CONSTRAINT fk_inviteLinks_calendar FOREIGN KEY (calendar) REFERENCES calendar(id));', function(err, results, fields) {
+                  if (err == null) {
+                    console.log("DB set up");
+                  } else {
+                    console.log(err);
+                  }
+                });
               } else {
                 console.log(err);
               }
@@ -218,6 +224,50 @@ router.post('/createCalendar', middlewareAuth, (req, res, next) => {
       res.send("Error");
     }
   });
+});
+
+router.post('/createInviteLink', middlewareAuth, hasAccessToCalendar, (req, res, next) => {
+  var inviteHash = randomString();
+  connection.execute("SELECT * FROM inviteLinks WHERE calendar=?", [req.body.calendar], function(err, results, fields) {
+    if (err === null) {
+      var query = "UPDATE inviteLinks SET inviteHash=?, inviteEndDate=? WHERE calendar=?";
+      var params = [inviteHash, new Date(new Date().getTime() + 86400000), req.body.calendar];
+      if (!results[0]) {
+        query = "INSERT INTO inviteLinks VALUES (?, ?, ?)";
+        params = [req.body.calendar, inviteHash, new Date(new Date().getTime() + 86400000)];
+      }
+      connection.execute(query, params, function(err, results, fields) {
+        if (err === null) {
+          res.send("success: " + inviteHash);
+        } else {
+          res.send(err);
+        }
+      });
+    }
+  })
+});
+
+router.get('/joinCalendar', middlewareAuth, (req, res, next) => {
+  connection.execute("SELECT inviteEndDate FROM inviteLinks WHERE calendar=? AND inviteHash=?", [req.query.calendar, req.query.inviteHash], function(err, results, fields) {
+    if (err === null) {
+      if (results[0]) {
+        var inviteEndDate = new Date(results[0].inviteEndDate);
+        if (new Date() < inviteEndDate) {
+          connection.execute("INSERT INTO access VALUES (?, ?, 'user')", [req.session.username, req.query.calendar], function(err, results, fields) {
+            if (err === null) {
+              res.redirect("/user?calendar=" + req.query.calendar);
+            } else {
+              res.send(err);
+            }
+          });
+        } else {
+          res.send("Invite link expired");
+        }
+      }
+    } else {
+      res.send(err);
+    }
+  })
 });
 
 router.post('/inviteUser', middlewareAuth, hasAccessToCalendar, (req, res, next) => {

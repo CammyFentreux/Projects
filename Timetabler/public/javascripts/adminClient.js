@@ -152,5 +152,12 @@ window.addEventListener('load', () => {
 	document.getElementById("userBtn").addEventListener("click", function() {
         window.location.href="./user?calendar=" + calendar
     })
+    document.getElementById("generateInviteLink").addEventListener("click", function() {
+        xhttpRequest('/createInviteLink', function(xhttp) {
+            if (xhttp.responseText.substring(0, 7) === "success") {
+                document.getElementById("inviteByLink").value = "https://" + window.location.hostname + "/joinCalendar?calendar=" + encodeURIComponent(calendar) + "&inviteHash=" + encodeURIComponent(xhttp.responseText.substring(9))
+            }
+        }, "calendar=" + calendar)
+    })
 	setupView()
 })
