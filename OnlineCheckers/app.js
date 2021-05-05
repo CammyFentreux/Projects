@@ -1,6 +1,8 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+const session = require('express-session');
+const memoryStore = require('memorystore')(session);
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
@@ -18,6 +20,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: 'haskell > java',
+  resave: false,
+  saveUninitialized: false,
+  store: new memoryStore({
+    checkPeriod: 86400000
+  })
+}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
