@@ -2,45 +2,52 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <script src="./libs/Toast.min.js"></script>
+        <link rel='stylesheet' href='/libs/Toast.min.css' />
         <script src="javascripts/base.js"></script>
         <script src="javascripts/timetable.js"></script>
         <script src="javascripts/adminClient.js"></script>
-        <link rel="stylesheet" href="https://css.gg/clipboard.css">
         <link rel="stylesheet" type="text/css" href="stylesheets/base.css">
         <link rel="stylesheet" type="text/css" href="stylesheets/timetable.css">
         <link rel="stylesheet" type="text/css" href="stylesheets/adminClient.css">
         <title>Timetable Poller</title>
     </head>
     <body class="dark">
-        <h1><%= calendarTitle %></h1>
-        <div class="hide" id="daysTimesDiv" data-days="<%= calendarDays %>" data-times="<%= calendarTimes %>"></div>
-        <div id="main">
-            <div id="heatmapControlPanel" class="hidden">
-                <button class="accordion">Invite User</button>
-                <div>
-                    <form action="/inviteUser" method="POST">
-                        <input type="text" name="calendar" class="hide" value="<%= calendar %>" readonly>
-                        <input type="text" name="username" placeholder="Username" class="largerWidth">
-                        <br>
-                        <input type="checkbox" id="inviteAsAdmin" name="inviteAsAdmin">
-                        <label for="inviteAsAdmin">Admin</label>
-                        <button type="submit">Invite</button>
-                    </form>
+        <% if (typeof error === "undefined") { %>
+            <h1><%= calendarTitle %></h1>
+            <div class="hide" id="daysTimesDiv" data-days="<%= calendarDays %>" data-times="<%= calendarTimes %>"></div>
+            <div id="main">
+                <div id="heatmapControlPanel" class="hidden">
+                    <button class="accordion">Invite User</button>
+                    <div>
+                        <form class="formPost" action="#" method="POST" data-url="/inviteUser">
+                            <input type="text" name="calendar" class="hide" value="<%= calendar %>" readonly>
+                            <input type="text" name="username" placeholder="Username" class="largerWidth">
+                            <br>
+                            <input type="checkbox" id="inviteAsAdmin" name="inviteAsAdmin">
+                            <label for="inviteAsAdmin">Admin</label>
+                            <button type="submit">Invite</button>
+                        </form>
+                    </div>
+                    <button class="accordion">Invite By Link</button>
+                    <div>
+                        <button id="generateInviteLink">Generate Link</button>
+                        <input id="inviteByLink" class="copy" readonly>
+                    </div>
+                    <button class="accordion">Users</button>
+                    <div id="controlPanelUsers">
+                    </div>
                 </div>
-                <button class="accordion">Invite By Link</button>
-                <div>
-                    <button id="generateInviteLink">Generate Link</button>
-                    <input id="inviteByLink" class="copy" readonly>
-                </div>
-                <button class="accordion">Users</button>
-                <div id="controlPanelUsers">
-                </div>
+                <table id="tblTimetable"></table>
             </div>
-            <table id="tblTimetable"></table>
-        </div>
-        <button id="homeBtn">Home</button>
-        <button id="userBtn">Enter My Availability</button>
-        <button id="lightDarkSwitch">Light Mode</button>
-        <button id="logoutBtn">Log Out</button>
+            <button id="homeBtn">Home</button>
+            <button id="userBtn">Enter My Availability</button>
+            <button id="lightDarkSwitch">Light Mode</button>
+            <button id="logoutBtn">Log Out</button>
+        <% } else { %>
+            <div class="infoMessage error"><button class="closeBtn"></button><span><%= error %></span></div>
+            <button id="homeBtn">Home</button>
+            <button id="logoutBtn">Log Out</button>
+        <% } %>
     </body>
 </html>

@@ -15,10 +15,18 @@ function randomString(size = 21) {
     .slice(0, size)
 }
 
+function reportError(err) {
+  if (process.env.NODE_ENV !== "production") {
+    return "We encountered an error. Please try again later.";
+  } else {
+    return err;
+  }
+}
+
 function middlewareAuth(req, res, next) {
   if (req.session && req.session.username) {
     connection.query('SELECT * FROM user WHERE username=?', [req.session.username], function(err, results, fields) {
-      if (results[0]) next();
+      if (!err && results[0]) next();
       else res.redirect("/login");
     });
   } else {
@@ -69,18 +77,22 @@ connection.query('CREATE TABLE IF NOT EXISTS user( username varchar(255) PRIMARY
 });
 
 
-/* GET methods */
-router.get('/', middlewareAuth, (req, res, next) => {
-  renderIndex(req, res);
-});
-
-function renderIndex(req, res, verified) {
+function renderIndex(req, res, verified, errMessage) {
   connection.execute('SELECT access.calendar, access.access, calendar.title FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=?;', [req.session.username], (err, results, fields) => {
-    var options = { title: 'Timetabler', calendars: results };
+    var options = { title: 'Timetabler<br>Nice!', calendars: results };
+    var errString = "";
+    if (err) errString += reportError(err) + "<br>";
+    if (errMessage) errString += errMessage;
+    if (errString !== "") options.error = errString;
     if (typeof verified !== 'undefined') options.verified = verified;
     res.render('index', options);
   });
 }
+
+/* GET methods */
+router.get('/', middlewareAuth, (req, res, next) => {
+  renderIndex(req, res);
+});
 
 router.get('/user', middlewareAuth, (req, res, next) => {
   connection.execute('SELECT access.access, calendar.title, calendar.days, calendar.times FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=? AND calendar.id=?', [req.session.username, req.query.calendar], function(err, results, fields) {
@@ -90,11 +102,12 @@ router.get('/user', middlewareAuth, (req, res, next) => {
       if (err === null) {
         res.render('UserClient', {access: results[0].access, calendarTitle: results[0].title, calendarDays: results[0].days, calendarTimes: results[0].times});
       } else {
-        res.send(err);
+        res.render('UserClient', {error: reportError(err)});
       }
     }
   })
 });
+
 router.get('/admin', middlewareAuth, (req, res, next) => {
   connection.execute('SELECT access.access, calendar.title, calendar.days, calendar.times FROM access INNER JOIN calendar ON access.calendar=calendar.id WHERE access.user=? AND calendar.id=?;', [req.session.username, req.query.calendar], function(err, results, fields) {
     console.log(err);
@@ -104,12 +117,62 @@ router.get('/admin', middlewareAuth, (req, res, next) => {
       if (err === null) {
         res.render('AdminClient', {calendar: req.query.calendar, calendarTitle: results[0].title, calendarDays: results[0].days, calendarTimes: results[0].times});
       } else {
-        res.send(err);
+        res.render('AdminClient', {error: reportError(err)});
       }
     }
   });
 });
+
 router.get('/login', (req, res, next) => res.render('login'));
+
+router.get('/joinCalendar', middlewareAuth, (req, res, next) => {
+  connection.execute("SELECT inviteEndDate FROM inviteLinks WHERE calendar=? AND inviteHash=?", [req.query.calendar, req.query.inviteHash], function(err, results, fields) {
+    if (err === null) {
+      if (results[0]) {
+        var inviteEndDate = new Date(results[0].inviteEndDate);
+        if (new Date() < inviteEndDate) {
+          connection.execute("INSERT INTO access VALUES (?, ?, 'user')", [req.session.username, req.query.calendar], function(err, results, fields) {
+            if (err === null) {
+              res.redirect("/user?calendar=" + req.query.calendar);
+            } else {
+              renderIndex(req, res, undefined, reportError(err));
+            }
+          });
+        } else {
+          renderIndex(req, res, undefined, "Invite link expired. Please ask the calendar admin for a new invitation.");
+        }
+      }
+    } else {
+      renderIndex(req, res, undefined, reportError(err));
+    }
+  })
+});
+
+router.get('/verifyEmail', (req, res, next) => {
+  connection.execute("SELECT verified FROM user WHERE username=?", [decodeURIComponent(req.query.user)], function(err, results, fields) {
+    if (err) {
+      renderIndex(req, res, false, reportError(err));
+    } else if (!results[0]) {
+      renderIndex(req, res, false, "User not found. Please try again");
+    } else {
+      if (results[0].verified) {
+        renderIndex(req, res, true);
+      } else {
+        connection.execute("UPDATE user SET verified='1' WHERE username=? AND emailHash=?;", [decodeURIComponent(req.query.user), decodeURIComponent(req.query.emailHash)], function(err, results, fields) {
+          if (err === null) {
+            if (results.changedRows === 0) {
+              renderIndex(req, res, false);
+            } else {
+              renderIndex(req, res, true);
+            }
+          } else {
+            renderIndex(req, res, false, reportError(err));
+          }
+        });
+      }
+    }
+  })
+});
 
 /* POST methods */
 router.post('/clearUserAvailability', middlewareAuth, (req, res, next) => {
@@ -117,8 +180,7 @@ router.post('/clearUserAvailability', middlewareAuth, (req, res, next) => {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
   connection.execute('DELETE FROM availability WHERE user=? AND calendar=?', [req.session.username, req.body.calendar], (err, results, fields) => {
-    if (err) console.error(err);
-    res.send(err ? "failure" : "success");
+    res.send(err ? reportError(err) : "success");
   });
 });
 
@@ -127,8 +189,7 @@ router.post('/saveUserAvailability', middlewareAuth, hasAccessToCalendar, (req, 
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
   connection.execute('INSERT INTO availability (user, calendar, datetime, free) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE free=?', [req.session.username, req.body.calendar, req.body.datetime, req.body.free, req.body.free], (err, results, fields) => {
-    if (err) console.error(err);
-    res.send(err ? "failure" : "success");
+    res.send(err ? reportError(err) : "success");
   });
 });
 
@@ -144,7 +205,7 @@ router.post('/getUserAvailability', middlewareAuth, hasAccessToCalendar, (req, r
         res.send("empty");
       }
     } else {
-      res.send("Error");
+      res.send(reportError(err));
     }
   });
 });
@@ -155,9 +216,9 @@ router.post('/getAllAvailabilities', middlewareAuth, hasAccessToCalendar, (req, 
   }
   connection.execute("SELECT free FROM availability WHERE calendar=? AND datetime=?;", [req.body.calendar, req.body.datetime], (err, results, fields) => {
     if (err) {
-      res.send("Error");
+      res.send(reportError(err));
     } else if (results.length === 0) {
-      res.send("Empty");
+      res.send("empty");
     } else {
       res.send(results);
     }
@@ -168,14 +229,13 @@ router.post('/getAvailabilities', middlewareAuth, hasAccessToCalendar, (req, res
   if (req.body.datetime === undefined || req.body.calendar === undefined || req.body.subset === undefined) {
     return res.status(400).send({ message: 'Invalid request', request: req.body });
   }
-  console.log(JSON.stringify(req.body.subset));
   req.body.subset = req.body.subset.split(',')
   console.log(`SELECT free FROM availability WHERE calendar=? AND datetime=? AND user IN (${req.body.subset.map((result) => result).join()})`)
   connection.execute(`SELECT free FROM availability WHERE calendar=? AND datetime=? AND user IN (${req.body.subset.map(() => "?").join()})`, [...[req.body.calendar, req.body.datetime], ...req.body.subset], (err, results) => {
     if (err) {
-      res.send("Error");
+      res.send(reportError(err));
     } else if (results.length === 0) {
-      res.send("Empty");
+      res.send("empty");
     } else {
       res.send(results);
     }
@@ -188,16 +248,20 @@ router.post('/getCalendarAccess', middlewareAuth, hasAccessToCalendar, (req, res
   }
   connection.execute('SELECT user FROM access WHERE calendar=?', [req.body.calendar],  (err, results) => {
     if (err) {
-      res.send("Error")
+      res.send(reportError(err));
     } else if (results.length === 0) {
-      res.send("Empty")
+      res.send("empty");
     } else {
       connection.execute(`SELECT username FROM user WHERE username IN (${results.map(() => "?").join()})`, results.map((result) => result.user), (err, results) => {
-        res.send(results)
-      })
+        if (err) {
+          res.send(reportError(err));
+        } else {
+          res.send(results);
+        }
+      });
     }
-  })
-})
+  });
+});
 
 router.post('/createCalendar', middlewareAuth, (req, res, next) => {
   if (req.body.calendarName === undefined) {
@@ -205,7 +269,6 @@ router.post('/createCalendar', middlewareAuth, (req, res, next) => {
   }
   connection.execute("SELECT uuid();", function(err, results, fields) {
     let id = results[0]["uuid()"];
-    console.log(JSON.stringify(results));
     if (err === null) {
       var days = "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday";
       if (req.body.calendarDays !== null && req.body.calendarDays !== "") days = req.body.calendarDays;
@@ -243,29 +306,6 @@ router.post('/createInviteLink', middlewareAuth, hasAccessToCalendar, (req, res,
           res.send(err);
         }
       });
-    }
-  })
-});
-
-router.get('/joinCalendar', middlewareAuth, (req, res, next) => {
-  connection.execute("SELECT inviteEndDate FROM inviteLinks WHERE calendar=? AND inviteHash=?", [req.query.calendar, req.query.inviteHash], function(err, results, fields) {
-    if (err === null) {
-      if (results[0]) {
-        var inviteEndDate = new Date(results[0].inviteEndDate);
-        if (new Date() < inviteEndDate) {
-          connection.execute("INSERT INTO access VALUES (?, ?, 'user')", [req.session.username, req.query.calendar], function(err, results, fields) {
-            if (err === null) {
-              res.redirect("/user?calendar=" + req.query.calendar);
-            } else {
-              res.send(err);
-            }
-          });
-        } else {
-          res.send("Invite link expired");
-        }
-      }
-    } else {
-      res.send(err);
     }
   })
 });
@@ -365,20 +405,6 @@ function sendVerificationEmail(res, body, emailHash) {
     }
   });
 }
-
-router.get('/verifyEmail', (req, res, next) => {
-  connection.execute("UPDATE user SET verified='1' WHERE username=? AND emailHash=?;", [decodeURIComponent(req.query.user), decodeURIComponent(req.query.emailHash)], function(err, results, fields) {
-    if (err === null) {
-      if (results.changedRows === 0) {
-        renderIndex(req, res, false);
-      } else {
-        renderIndex(req, res, true);
-      }
-    } else {
-      res.send(err);
-    }
-  });
-});
 
 router.post('/sendVerificationEmail', (req, res, next) => {
   var emailHash = randomString();

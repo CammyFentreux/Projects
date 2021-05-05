@@ -1,57 +1,60 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <script src="./libs/Toast.min.js"></script>
-    <link rel='stylesheet' href='/libs/Toast.min.css' />
-    <script src="./javascripts/base.js"></script>
-    <script src="./javascripts/index.js"></script>
-    <link rel='stylesheet' href='/stylesheets/base.css' />
-    <link rel='stylesheet' href='/stylesheets/index.css' />
-  </head>
-  <body class="dark">
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-    <% if (typeof verified !== 'undefined') { %>
-        <% if (verified) { %>
-            <div class="infoMessage success"><button class="closeBtn"></button><span>Your email is verified!</span></div>
-        <% } else { %>
-            <div class="infoMessage error"><button class="closeBtn"></button><span>Your email wasn't verified. Please <a href="#" id="verifyEmailLink">try again</a>.</span></div>
+    <head>
+        <title><%= title %></title>
+        <script src="./libs/Toast.min.js"></script>
+        <link rel='stylesheet' href='/libs/Toast.min.css' />
+        <script src="./javascripts/base.js"></script>
+        <script src="./javascripts/index.js"></script>
+        <link rel='stylesheet' href='/stylesheets/base.css' />
+        <link rel='stylesheet' href='/stylesheets/index.css' />
+    </head>
+    <body class="dark">
+        <h1><%= title %></h1>
+        <p>Welcome to <%= title %></p>
+        <% if (typeof verified !== 'undefined') { %>
+            <% if (verified) { %>
+                <div class="infoMessage success"><button class="closeBtn"></button><span>Your email is verified!</span></div>
+            <% } else { %>
+                <div class="infoMessage error"><button class="closeBtn"></button><span>Your email wasn't verified. Please <a href="#" id="verifyEmailLink">try again</a>.</span></div>
+            <% } %>
         <% } %>
-    <% } %>
-    <h2>Your Calendars:</h2>
-    <table>
-        <% for (var i = 0; i < calendars.length; i++) { %>
-            <tr>
-                <% if (calendars[i].access === "invited" || calendars[i].access === "invitedAsAdmin") { %>
-                    <td><%= calendars[i].title %></td>
-                    <td>Invited: 
-                        <a href="javascript:void(0)" class="acceptInvite" data-calendar="<%= calendars[i].calendar %>">Accept</a>
-                        <a href="javascript:void(0)" class="declineInvite" data-calendar="<%= calendars[i].calendar %>">Decline</a>
-                    </td>
-                <% } else { %>
-                    <% if (calendars[i].access === "admin") { %>
-                        <td><a href="./admin?calendar=<%= calendars[i].calendar %>"><%= calendars[i].title %></a></td>
+        <% if (typeof error !== 'undefined') { %>
+            <div class="infoMessage error"><button class="closeBtn"></button><span><%= error %></span></div>
+        <% } %>
+        <h2>Your Calendars:</h2>
+        <table>
+            <% for (var i = 0; i < calendars.length; i++) { %>
+                <tr>
+                    <% if (calendars[i].access === "invited" || calendars[i].access === "invitedAsAdmin") { %>
+                        <td><%= calendars[i].title %></td>
+                        <td>Invited: 
+                            <a href="javascript:void(0)" class="acceptInvite" data-calendar="<%= calendars[i].calendar %>">Accept</a>
+                            <a href="javascript:void(0)" class="declineInvite" data-calendar="<%= calendars[i].calendar %>">Decline</a>
+                        </td>
                     <% } else { %>
-                        <td><a href="./user?calendar=<%= calendars[i].calendar %>"><%= calendars[i].title %></a></td>
+                        <% if (calendars[i].access === "admin") { %>
+                            <td><a href="./admin?calendar=<%= calendars[i].calendar %>"><%= calendars[i].title %></a></td>
+                        <% } else { %>
+                            <td><a href="./user?calendar=<%= calendars[i].calendar %>"><%= calendars[i].title %></a></td>
+                        <% } %>
+                        <td><%= calendars[i].access.charAt(0).toUpperCase() + calendars[i].access.slice(1); %></td>
                     <% } %>
-                    <td><%= calendars[i].access.charAt(0).toUpperCase() + calendars[i].access.slice(1); %></td>
-                <% } %>
-            </tr>
-        <% } %>
-    </table>
-    <button id="createCalendar">Create Calendar</button>
-    <div id="createCalendarWrapper" class="hide">
-        <button class="closeBtn"></button>
-        <form action="/createCalendar" method="POST">
-            <label for="calendarName">Name:</label><br>
-            <input type="text" id="calendarName" name="calendarName" placeholder="Calendar Name" required><br>
-            <label for="calendarDays">Days/Headers for columns:<br><span class="subLabel">Separated by a comma and a space</span></label><br>
-            <input type="text" id="calendarDays" name="calendarDays" placeholder="Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday" value="Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday"><br>
-            <label for="calendarTimes">Times/Headers for rows:<br><span class="subLabel">Separated by a comma and a space</span></label><br>
-            <input type="text" id="calendarTimes" name="calendarTimes" placeholder="9, 10, 11, 12, 1, 2, 3, 4, 5" value="9, 10, 11, 12, 1, 2, 3, 4, 5"><br>
-            <button type="submit">Create</button>
-        </form>
-    </div>
-  </body>
+                </tr>
+            <% } %>
+        </table>
+        <button id="createCalendar">Create Calendar</button>
+        <div id="createCalendarWrapper" class="hide">
+            <button class="closeBtn"></button>
+            <form class="formPost" action="#" method="POST" data-url="/createCalendar">
+                <label for="calendarName">Name:</label><br>
+                <input type="text" id="calendarName" name="calendarName" placeholder="Calendar Name" required><br>
+                <label for="calendarDays">Days/Headers for columns:<br><span class="subLabel">Separated by a comma and a space</span></label><br>
+                <input type="text" id="calendarDays" name="calendarDays" placeholder="Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday" value="Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday"><br>
+                <label for="calendarTimes">Times/Headers for rows:<br><span class="subLabel">Separated by a comma and a space</span></label><br>
+                <input type="text" id="calendarTimes" name="calendarTimes" placeholder="9, 10, 11, 12, 1, 2, 3, 4, 5" value="9, 10, 11, 12, 1, 2, 3, 4, 5"><br>
+                <button type="submit">Create</button>
+            </form>
+        </div>
+    </body>
 </html>

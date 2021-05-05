@@ -64,4 +64,16 @@ window.addEventListener("load", function() {
             document.execCommand("copy");
         })
     }
+    var forms = document.getElementsByClassName("formPost")
+    for (var form of forms) {
+        form.addEventListener("submit", function() {
+            xhttpRequest(this.dataset.url, function(xhttp) {
+                if (xhttp.responseText.substring(0, 7) === "success") {
+                    new Toast({message: "Success!", type: "success"})
+                } else {
+                    new Toast({message: "Error: " + xhttp.responseText, type: "danger"})
+                }
+            });
+        })
+    }
 })

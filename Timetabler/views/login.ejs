@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Timetabler - Login</title>
-    <link rel='stylesheet' href='/stylesheets/base.css' />
-    <link rel='stylesheet' href='/stylesheets/login.css' />
-  </head>
-  <body class="dark">
-    <h1>Login</h1>
-    <form action="/login" method="post">
-      <label for="username">Username:</label><br>
-      <input type="text" id="username" name="username" placeholder="Username"><br>
-      <label for="password">Password:</label><br>
-      <input type="password" id="password" name="password" placeholder="Password"><br>
-      <input type="submit" value="Log In">
-    </form>
-    <h1>Register</h1>
-    <form action="/register" method="post">
-      <label for="username">Username:</label><br>
-      <input type="text" id="username" name="username" placeholder="Username" required><br>
-      <label for="email">Email:</label><br>
-      <input type="email" id="email" name="email" placeholder="Email" required><br>
-      <label for="password">Password:</label><br>
-      <input type="password" id="password" name="password" placeholder="Password" required><br>
-      <input type="submit" value="Register">
-    </form>
-  </body>
+    <head>
+        <title>Timetabler - Login</title>
+        <script src="./libs/Toast.min.js"></script>
+        <link rel='stylesheet' href='/libs/Toast.min.css' />
+        <script src="./javascripts/base.js"></script>
+        <link rel='stylesheet' href='/stylesheets/base.css' />
+        <link rel='stylesheet' href='/stylesheets/login.css' />
+    </head>
+    <body class="dark">
+        <h1>Login</h1>
+        <form class="formPost" action="#" method="post" data-url="/login">
+          <label for="username">Username:</label><br>
+          <input type="text" id="username" name="username" placeholder="Username"><br>
+          <label for="password">Password:</label><br>
+          <input type="password" id="password" name="password" placeholder="Password"><br>
+          <input type="submit" value="Log In">
+        </form>
+        <h1>Register</h1>
+        <form class="formPost" action="#" method="post" data-url="/register">
+          <label for="username">Username:</label><br>
+          <input type="text" id="username" name="username" placeholder="Username" required><br>
+          <label for="email">Email:</label><br>
+          <input type="email" id="email" name="email" placeholder="Email" required><br>
+          <label for="password">Password:</label><br>
+          <input type="password" id="password" name="password" placeholder="Password" required><br>
+          <input type="submit" value="Register">
+        </form>
+    </body>
 </html>
