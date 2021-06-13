@@ -1,40 +1,43 @@
-var express = require('express');
-var router = express.Router();
-
-function determineLegality(x,y, position, length) {
-  return x > 0 && y > 0 && x < length && y < length && position === ""
-}
+var express = require('express')
+var router = express.Router()
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
+  res.render('index', {title: 'Checkers'})
 });
 
-router.post('/requestMoves', ((req, res) => {
-  if (req.body.x === undefined || req.body.y === undefined || req.body.roomCode === undefined) {
-    return res.status(400).send({message: 'Invalid request', request: req.body})
-  }
-  const length = req.session.games[req.body.roomCode].length,
-        piece  = req.session.games[req.body.roomCode].board[req.body.x][req.body.y],
-        potentialMoves = [[-1.1], [1,1]],
-        legalMoves     = []
-  if (piece[0] === "P") {
-    potentialMoves.push([-1,-1])
-    potentialMoves.push([1,-1])
+router.get('/game', (req, res) => {
+  res.render('game', {title: 'Checkers'})
+})
+
+router.post('/createLobby', (req, res) => {
+  if (req.body.length === undefined) {
+    return res.status(400).send({ message: 'Invalid request; no length given', request: req.body });
   }
 
-  for (let vector of potentialMoves) {
-    const nx = req.body.x + vector[0],
-          ny = req.body.y + vector[y],
-          npiece = req.session.games[req.body.roomCode].board[nx][ny]
+  const lobbyCode = Math.ceil(Math.random()*100000).toString()
+  req.session.games = {}
+  req.session.games[lobbyCode] = {}
 
-   if (determineLegality(nx, ny, npiece, length)) {
-     legalMoves.push(vector)
-   }
+  for (let i = 0; i < req.body.length; i++) {
+    for (let j = 0; j < req.body.length; j++) {
+      if (i%2 !== j%2) {
+        if (i < 3) {
+          req.session.games[lobbyCode][`${i},${j}`] = "p2"
+        } else if (i >= req.body.length - 3) {
+          req.session.games[lobbyCode][`${i},${j}`] = "p1"
+        }
+      }
+    }
   }
+  res.send(lobbyCode)
+})
 
-  res.send(legalMoves)
-}))
+router.post('/requestBoard', (req, res) => {
+  if (req.body.lobbyCode === undefined) {
+    return res.status(400).send({ message: 'Invalid request; no length given', request: req.body });
+  }
+  res.send(req.session.games[req.body.lobbyCode])
+})
 
-
-module.exports = router;
+module.exports = router
